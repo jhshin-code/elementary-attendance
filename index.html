@@ -14,6 +14,7 @@
             --text-light: #999;
             --success: #28a745;
             --danger: #dc3545;
+            --gold: #f1c40f;
         }
 
         body {
@@ -34,6 +35,23 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             margin-bottom: 20px;
             text-align: center;
+            position: relative; /* 버튼 배치를 위해 추가 */
+        }
+
+        /* 💰 달란트 현황 버튼 */
+        .talent-link {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.8rem;
+            color: #d68910;
+            font-weight: 700;
+            background: #fff9e6;
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--gold);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(241, 196, 15, 0.2);
         }
 
         .app-title {
@@ -87,6 +105,62 @@
             accent-color: var(--primary); vertical-align: middle;
         }
 
+        /* 팝업(모달) 스타일 */
+        #talentModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            width: 85%;
+            max-width: 400px;
+            border-radius: 24px;
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #d68910;
+        }
+        .talent-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 5px;
+            border-bottom: 1px solid #f5f5f5;
+            align-items: center;
+        }
+        .rank-badge {
+            width: 22px; height: 22px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        .rank-1 { background: var(--gold); color: white; }
+
         /* 상태 알림창 (Toast) */
         #status {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -103,8 +177,17 @@
 
     <div id="status">☁️ 데이터를 동기화 중...</div>
 
+    <div id="talentModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeTalentModal()">&times;</span>
+            <div class="modal-title">💰 누적 달란트 현황</div>
+            <div id="talentList">로딩 중... ⏳</div>
+        </div>
+    </div>
+
     <div class="main-container">
         <div class="header-card">
+            <div class="talent-link" onclick="openTalentModal()">💰 달란트 현황</div>
             <h1 class="app-title"><span>⛪</span> 초등부 출석부</h1>
             <div class="control-group">
                 <input type="date" id="datePicker" class="styled-input" onchange="updateTargetDate(this.value)">
@@ -147,24 +230,51 @@
             { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하" }, { grade: "6", name: "장선우" }, { grade: "6", name: "임재율" }
         ];
 
-        // ▼▼▼ 구글 앱스 스크립트 '새 배포' URL을 여기에 붙여넣으세요 ▼▼▼
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzkqziJzKZyMl3Z-f7A0rlz8zB8Zhj0sbemby4OUy6h7RE3boQfzOTM_f0nFOgCFxQZsg/exec"; 
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         let targetDate = "";
+
+        // 💰 달란트 현황 로드 (GET)
+        async function openTalentModal() {
+            document.getElementById('talentModal').style.display = 'flex';
+            const listEl = document.getElementById('talentList');
+            listEl.innerHTML = "데이터를 불러오는 중... ⏳";
+            
+            try {
+                // 앱스 스크립트의 doGet에서 action=getTalents를 처리하도록 설계됨
+                const res = await fetch(`${GAS_URL}?action=getTalents&t=${Date.now()}`);
+                const data = await res.json();
+                
+                listEl.innerHTML = data.map((item, index) => `
+                    <div class="talent-item">
+                        <div style="display:flex; align-items:center;">
+                            <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">${index + 1}</div>
+                            <div>
+                                <span style="font-weight:700; font-size:0.95rem;">${item.name}</span>
+                                <span style="font-size:0.75rem; color:#999;"> (${item.grade}학년)</span>
+                            </div>
+                        </div>
+                        <div style="font-weight:800; color:#d68910;">${item.score} <span style="font-size:0.7rem;">p</span></div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                listEl.innerHTML = "데이터를 가져오지 못했습니다. 😢<br><small>구글 스크립트 설정을 확인해주세요.</small>";
+            }
+        }
+
+        function closeTalentModal() {
+            document.getElementById('talentModal').style.display = 'none';
+        }
 
         // 데이터 로드 (GET)
         async function loadData() {
             showStatus("🔍 데이터를 가져오는 중...", "#333");
             try {
-                // 캐시 방지를 위해 Timestamp(t) 추가
                 const res = await fetch(`${GAS_URL}?date=${targetDate}&t=${new Date().getTime()}`);
                 const savedData = await res.json();
                 
-                // 체크박스 초기화
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
-                // 시트 데이터 매칭 (이름+학년 기준)
                 savedData.forEach(item => {
                     const name = String(item.name).trim();
                     const grade = String(item.grade).trim();
@@ -202,15 +312,11 @@
             try {
                 await fetch(GAS_URL, { 
                     method: "POST", 
-                    mode: 'no-cors', // 구글 보안 정책 우회
+                    mode: 'no-cors', 
                     body: JSON.stringify(payload) 
                 });
-                
                 showStatus(`✅ ${name} 저장 완료`, "var(--success)", 1500);
-                
-                // 중복 정리 로직이 서버에서 끝날 시간을 벌기 위해 0.6초 뒤에 새로고침
                 setTimeout(() => loadData(), 600); 
-
             } catch (e) {
                 showStatus("⚠️ 저장 오류 발생", "var(--danger)", 3000);
             }
@@ -224,7 +330,6 @@
 
         function setSmartDate() {
             const today = new Date();
-            // 수~토 접속 시 다가올 주일, 일~화 접속 시 지난 주일 계산
             const diff = (today.getDay() >= 3) ? (7 - today.getDay()) : -today.getDay();
             const sunday = new Date();
             sunday.setDate(today.getDate() + diff);
@@ -259,7 +364,7 @@
         window.onload = async () => {
             setSmartDate();
             renderTable(students);
-            await loadData(); // 초기 데이터 로드
+            await loadData();
         };
     </script>
 </body>
