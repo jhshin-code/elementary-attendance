@@ -1,1 +1,145 @@
-index.html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>주일 출석부</title>
+    <style>
+        :root { --primary: #4a90e2; --bg: #f5f5f7; }
+        body { font-family: -apple-system, sans-serif; margin: 0; padding: 15px; background: var(--bg); color: #333; }
+        
+        /* 상단 날짜 및 필터 섹션 */
+        .header-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; text-align: center; }
+        #datePicker { font-size: 1.1rem; padding: 8px; border: 2px solid var(--primary); border-radius: 8px; color: var(--primary); font-weight: bold; width: 160px; text-align: center; margin-bottom: 10px; }
+        .filter-select { width: 100%; max-width: 200px; padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; }
+
+        /* 테이블 스타일 */
+        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th, td { padding: 12px 2px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.85rem; }
+        th { background: #f8f9fa; color: #666; font-weight: 600; }
+        td:first-child { font-weight: bold; width: 22%; } /* 이름 열 */
+        
+        /* 체크박스 디자인 */
+        input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary); vertical-align: middle; }
+        
+        /* 저장 알림 토스트 */
+        #status { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 10px 20px; border-radius: 25px; font-size: 13px; display: none; z-index: 1000; }
+    </style>
+</head>
+<body>
+
+    <div id="status">저장 중...</div>
+
+    <div class="header-card">
+        <input type="date" id="datePicker" onchange="updateTargetDate(this.value)">
+        <div style="margin-top: 5px;">
+            <select class="filter-select" id="gradeFilter" onchange="filterStudents()">
+                <option value="all">전체 학년 보기</option>
+                <option value="1">1학년</option><option value="2">2학년</option>
+                <option value="3">3학년</option><option value="4">4학년</option>
+                <option value="5">5학년</option><option value="6">6학년</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>출석</th>
+                    <th>머릿</th>
+                    <th>헌금</th>
+                    <th>암송</th>
+                    <th>월암</th>
+                </tr>
+            </thead>
+            <tbody id="studentList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // 학생 데이터 명단
+        const students = [
+            { grade: "1", name: "김지호" }, { grade: "1", name: "신채은" },
+            { grade: "2", name: "김세아" }, { grade: "2", name: "백윤우" }, { grade: "2", name: "신리호" }, { grade: "2", name: "이가은" }, { grade: "2", name: "이예안" }, { grade: "2", name: "최다솔" },
+            { grade: "3", name: "김민찬" }, { grade: "3", name: "김유성" }, { grade: "3", name: "박지한" }, { grade: "3", name: "배민하" }, { grade: "3", name: "이유현" }, { grade: "3", name: "주인성" },
+            { grade: "4", name: "김시아" }, { grade: "4", name: "김유나" }, { grade: "4", name: "임정우" }, { grade: "4", name: "김동하" }, { grade: "4", name: "박태온" }, { grade: "4", name: "유시영" }, { grade: "4", name: "최지온" },
+            { grade: "5", name: "박이한" }, { grade: "5", name: "임승주" }, { grade: "5", name: "주현성" },
+            { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "장선우" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "임재율" }
+        ];
+
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwjGPpGUuLgzmdYAjQgnWZizte1EACemoGFB2ZstW3Di9N7Uz-uXFvgprgjpMo5ELE1Iw/exec"; // <--- 실제 배포 URL로 교체
+        let targetDate = "";
+
+        // 요일에 상관없이 이번 주 주일(일요일) 계산
+        function setSmartDate() {
+            const today = new Date();
+            const day = today.getDay();
+            const diff = (day >= 3) ? (7 - day) : -day; // 수~토는 다가올 주일, 일~화는 지난 주일
+            const sunday = new Date();
+            sunday.setDate(today.getDate() + diff);
+            targetDate = sunday.toISOString().split('T')[0];
+            document.getElementById('datePicker').value = targetDate;
+        }
+
+        function updateTargetDate(val) { targetDate = val; }
+
+        function renderTable(list) {
+            const tbody = document.getElementById('studentList');
+            tbody.innerHTML = list.map(s => `
+                <tr data-name="${s.name}" data-grade="${s.grade}">
+                    <td>${s.name}<br><small style="color:#999; font-weight:normal;">${s.grade}학년</small></td>
+                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="attendance"></td>
+                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="keystone"></td>
+                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="offering"></td>
+                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="recitation"></td>
+                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="monthlyRecitation"></td>
+                </tr>
+            `).join('');
+        }
+
+        function filterStudents() {
+            const grade = document.getElementById('gradeFilter').value;
+            renderTable(grade === 'all' ? students : students.filter(s => s.grade === grade));
+        }
+
+        async function autoSave(name, grade) {
+            const statusEl = document.getElementById('status');
+            statusEl.innerText = "저장 중...";
+            statusEl.style.display = 'block';
+
+            const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
+            const payload = [{
+                date: targetDate,
+                name: name,
+                grade: grade,
+                attendance: tr.querySelector('[data-type="attendance"]').checked,
+                keystone: tr.querySelector('[data-type="keystone"]').checked,
+                offering: tr.querySelector('[data-type="offering"]').checked,
+                recitation: tr.querySelector('[data-type="recitation"]').checked,
+                monthlyRecitation: tr.querySelector('[data-type="monthlyRecitation"]').checked
+            }];
+
+            try {
+                await fetch(GAS_URL, { 
+                    method: "POST", 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(payload) 
+                });
+                statusEl.innerText = "✓ " + name + " 저장됨";
+                setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
+            } catch (e) {
+                statusEl.innerText = "⚠ 저장 실패";
+                console.error(e);
+            }
+        }
+
+        window.onload = () => {
+            setSmartDate();
+            renderTable(students);
+        };
+    </script>
+</body>
+</html>
