@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>초등부 출석부</title>
+    <title>주일 출석부</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
         :root { --primary: #4a90e2; --bg: #f0f2f5; --card: #ffffff; --text: #333; }
@@ -31,7 +31,7 @@
 
     <div class="main-container">
         <div class="header-card">
-            <h1 class="app-title">⛪ 초등부 출석부</h1>
+            <h1 class="app-title">⛪ 주일학교 출석부</h1>
             <div class="control-group">
                 <input type="date" id="datePicker" class="styled-input" onchange="updateTargetDate(this.value)">
                 <select class="styled-input" id="gradeFilter" onchange="filterStudents()">
@@ -48,7 +48,7 @@
                 <thead>
                     <tr>
                         <th style="width: 28%;">👶이름</th>
-                        <th>✅출석</th><th>돌</th><th>💰헌금</th><th>📖암송</th><th>🗓️월암송</th>
+                        <th>✅출석</th><th>🪨머릿돌</th><th>💰헌금</th><th>📖암송</th><th>🗓️월암송</th>
                     </tr>
                 </thead>
                 <tbody id="studentList"></tbody>
@@ -66,7 +66,7 @@
             { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "장선우" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "임재율" }
         ];
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyrTUsuLKS0d1JW1z0BeaBMKwL_tkUGeot_T0yF2pDXTKcGQGrD6UvhsbaZwwfL-gHBCg/exec"; 
+        const GAS_URL = "여기에_새로_배포한_GAS_URL_넣기"; 
         let targetDate = "";
 
         // 1. 시트에서 데이터 불러오기
