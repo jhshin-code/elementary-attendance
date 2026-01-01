@@ -3,42 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>주일 출석부</title>
+    <title>초등부 출석부 ⛪</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
-        :root { --primary: #4a90e2; --bg: #f0f2f5; --card: #ffffff; --text: #333; }
-        body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 20px 15px; background: var(--bg); color: var(--text); }
+        :root {
+            --primary: #4a90e2;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-dark: #333;
+            --text-light: #888;
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            margin: 0; padding: 20px 15px;
+            background: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
         .main-container { max-width: 600px; margin: 0 auto; }
-        .header-card { background: var(--card); padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
-        .app-title { margin: 0 0 20px 0; font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        /* 상단 카드 */
+        .header-card {
+            background: var(--card-bg);
+            padding: 25px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .app-title {
+            margin: 0 0 20px 0;
+            font-size: 1.6rem;
+            font-weight: 800;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
         .control-group { display: flex; flex-direction: column; gap: 12px; }
-        .styled-input { width: 100%; padding: 12px; font-size: 1rem; border: 2px solid #e1e4e8; border-radius: 12px; box-sizing: border-box; text-align: center; font-weight: 600; }
+
+        .styled-input {
+            width: 100%; padding: 12px; font-size: 1.05rem;
+            border: 2px solid #ddd; border-radius: 12px;
+            color: var(--text-dark); font-weight: 600;
+            background: white; box-sizing: border-box; text-align: center;
+            appearance: none;
+        }
+
         #datePicker { color: var(--primary); border-color: var(--primary); }
-        .table-container { background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e1e4e8; }
+
+        /* 테이블 스타일 */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e1e4e8;
+        }
+
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { background: #f8f9fa; padding: 15px 2px; font-size: 0.85rem; border-bottom: 2px solid #e1e4e8; }
+
+        th {
+            background: #f8f9fa; color: var(--text-dark);
+            font-weight: 700; font-size: 0.85rem;
+            padding: 15px 2px; border-bottom: 2px solid #e1e4e8;
+        }
+
         td { padding: 12px 2px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
+
+        tbody tr:nth-child(even) { background-color: #fafbfc; }
+        
         .name-cell { text-align: left; padding-left: 15px; }
         .name-text { font-weight: 700; font-size: 0.95rem; display: block; }
-        .grade-text { color: #888; font-size: 0.8rem; }
-        input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; accent-color: var(--primary); }
-        #status { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(50, 50, 50, 0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; display: none; z-index: 1000; align-items: center; gap: 8px; }
+        .grade-text { color: var(--text-light); font-size: 0.8rem; font-weight: 400; }
+
+        /* 체크박스 크기 */
+        input[type="checkbox"] {
+            width: 24px; height: 24px; cursor: pointer;
+            accent-color: var(--primary); vertical-align: middle;
+        }
+
+        /* 하단 알림창 */
+        #status {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(50, 50, 50, 0.95); color: white;
+            padding: 12px 24px; border-radius: 30px;
+            font-weight: 600; font-size: 14px;
+            display: none; z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            white-space: nowrap; align-items: center; gap: 8px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="status">☁️ 로딩 중...</div>
+    <div id="status"><span>☁️</span> 로딩 중...</div>
 
     <div class="main-container">
         <div class="header-card">
-            <h1 class="app-title">⛪초등부 출석부</h1>
+            <h1 class="app-title"><span>⛪</span> 주일학교 출석부</h1>
             <div class="control-group">
                 <input type="date" id="datePicker" class="styled-input" onchange="updateTargetDate(this.value)">
                 <select class="styled-input" id="gradeFilter" onchange="filterStudents()">
                     <option value="all">📋 전체 학년 보기</option>
-                    <option value="1">🌱 1학년</option><option value="2">🌿 2학년</option>
-                    <option value="3">🌳 3학년</option><option value="4">🍎 4학년</option>
-                    <option value="5">🏫 5학년</option><option value="6">🎓 6학년</option>
+                    <option value="1">🌱 1학년</option>
+                    <option value="2">🌿 2학년</option>
+                    <option value="3">🌳 3학년</option>
+                    <option value="4">🍎 4학년</option>
+                    <option value="5">🏫 5학년</option>
+                    <option value="6">🎓 6학년</option>
                 </select>
             </div>
         </div>
@@ -47,8 +122,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 28%;">👶이름</th>
-                        <th>✅출석</th><th>📗머릿돌</th><th>💰헌금</th><th>📖암송</th><th>📚월암송</th>
+                        <th style="width: 28%;">👶 이름</th>
+                        <th>✅출석</th>
+                        <th>🪨머릿</th>
+                        <th>💰헌금</th>
+                        <th>📖암송</th>
+                        <th>🗓️월암</th>
                     </tr>
                 </thead>
                 <tbody id="studentList"></tbody>
@@ -66,20 +145,23 @@
             { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "장선우" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "임재율" }
         ];
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbywRlvX6ygmdwFo-rwcgyI5iq-ohCejuHsphs0yT0uWyAin7ddoiXRkaqeTErd-VroOCw/exec"; 
+        // ▼▼▼ 여기에 구글 앱스 스크립트의 새 배포 URL을 넣으세요 ▼▼▼
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzQKqV6vSH_wcjv38AJ7qmPvzFZf_QGacIR0k1ZT7oQbTHhpbRhOBApUQUPCh0sfe5iqA/exec"; 
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
         let targetDate = "";
 
-        // 1. 시트에서 데이터 불러오기
+        // 시트 데이터 로드 (GET)
         async function loadAttendance() {
-            showStatus("🔍 기존 기록 확인 중...", "#333");
+            showStatus("<span>🔍</span> 기록 확인 중...", "#333");
             try {
-                const response = await fetch(`${GAS_URL}?date=${targetDate}`);
+                const response = await fetch(`${GAS_URL}?date=${targetDate}&t=${new Date().getTime()}`);
                 const savedData = await response.json();
                 
-                // 모든 체크박스 초기화
+                // 체크박스 초기화
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
-                // 데이터 반영
+                // 시트 데이터와 매칭하여 체크
                 savedData.forEach(item => {
                     const tr = document.querySelector(`tr[data-name="${item.name}"][data-grade="${item.grade}"]`);
                     if (tr) {
@@ -90,18 +172,21 @@
                         tr.querySelector('[data-type="monthlyRecitation"]').checked = item.monthlyRecitation;
                     }
                 });
-                showStatus("✨ 로드 완료", "#28a745", 1000);
+                showStatus("<span>✨</span> 로드 완료!", "#28a745", 1000);
             } catch (e) {
-                showStatus("❌ 로드 실패", "#dc3545", 2000);
+                console.error(e);
+                showStatus("<span>❌</span> 데이터를 불러오지 못했습니다.", "#dc3545", 2000);
             }
         }
 
-        // 2. 실시간 저장
+        // 실시간 저장 (POST)
         async function autoSave(name, grade) {
-            showStatus("☁️ 저장 중...", "#333");
+            showStatus("<span>☁️</span> 시트에 저장 중...", "#333");
             const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
             const payload = [{
-                date: targetDate, name: name, grade: grade,
+                date: targetDate,
+                name: name,
+                grade: String(grade),
                 attendance: tr.querySelector('[data-type="attendance"]').checked,
                 keystone: tr.querySelector('[data-type="keystone"]').checked,
                 offering: tr.querySelector('[data-type="offering"]').checked,
@@ -110,10 +195,14 @@
             }];
 
             try {
-                await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
-                showStatus(`✅ ${name} 저장 완료`, "#28a745", 1500);
+                await fetch(GAS_URL, { 
+                    method: "POST", 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(payload) 
+                });
+                showStatus(`<span>✅</span> ${name} 저장 완료`, "#28a745", 1500);
             } catch (e) {
-                showStatus("⚠️ 저장 실패", "#dc3545", 3000);
+                showStatus("<span>⚠️</span> 저장 실패!", "#dc3545", 3000);
             }
         }
 
@@ -126,8 +215,9 @@
         function setSmartDate() {
             const today = new Date();
             const diff = (today.getDay() >= 3) ? (7 - today.getDay()) : -today.getDay();
-            const sun = new Date(); sun.setDate(today.getDate() + diff);
-            targetDate = sun.toISOString().split('T')[0];
+            const sunday = new Date();
+            sunday.setDate(today.getDate() + diff);
+            targetDate = sunday.toISOString().split('T')[0];
             document.getElementById('datePicker').value = targetDate;
         }
 
@@ -135,7 +225,10 @@
             const tbody = document.getElementById('studentList');
             tbody.innerHTML = list.map(s => `
                 <tr data-name="${s.name}" data-grade="${s.grade}">
-                    <td class="name-cell"><span class="name-text">${s.name}</span><span class="grade-text">${s.grade}학년</span></td>
+                    <td class="name-cell">
+                        <span class="name-text">${s.name}</span>
+                        <span class="grade-text">${s.grade}학년</span>
+                    </td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="attendance"></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="keystone"></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="offering"></td>
@@ -147,12 +240,16 @@
 
         async function updateTargetDate(val) { targetDate = val; await loadAttendance(); }
         async function filterStudents() {
-            const g = document.getElementById('gradeFilter').value;
-            renderTable(g === 'all' ? students : students.filter(s => s.grade === g));
-            await loadAttendance();
+            const grade = document.getElementById('gradeFilter').value;
+            renderTable(grade === 'all' ? students : students.filter(s => s.grade === grade));
+            await loadAttendance(); // 필터링 후 체크박스 상태 다시 가져오기
         }
 
-        window.onload = async () => { setSmartDate(); renderTable(students); await loadAttendance(); };
+        window.onload = async () => {
+            setSmartDate();
+            renderTable(students);
+            await loadAttendance(); // 시작 시 기록 로드
+        };
     </script>
 </body>
 </html>
