@@ -18,7 +18,7 @@
         }
 
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             margin: 0;
             padding: 20px 15px;
             background: var(--bg-color);
@@ -26,7 +26,7 @@
             line-height: 1.5;
         }
 
-        /* 메인 컨테이너 (PC에서 너무 넓어지지 않게 잡기) */
+        /* 메인 컨테이너 */
         .main-container {
             max-width: 600px;
             margin: 0 auto;
@@ -44,12 +44,16 @@
 
         .app-title {
             margin: 0 0 20px 0;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        /* 입력 컨트롤 스타일 (날짜, 셀렉트박스) */
+        /* 입력 컨트롤 스타일 */
         .control-group {
             display: flex;
             flex-direction: column;
@@ -65,9 +69,10 @@
             color: var(--text-dark);
             font-weight: 500;
             background: white;
-            box-sizing: border-box; /* 패딩 포함 크기 계산 */
+            box-sizing: border-box;
             transition: all 0.2s;
             text-align: center;
+            appearance: none; /* 기본 스타일 제거 (iOS 등) */
         }
 
         .styled-input:focus {
@@ -79,6 +84,17 @@
         #datePicker {
             color: var(--primary);
             font-weight: 700;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234a90e2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+        }
+        
+        select.styled-input {
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+             background-repeat: no-repeat;
+             background-position: right 12px center;
+             background-size: 16px;
         }
 
         /* 테이블 스타일 */
@@ -98,83 +114,72 @@
 
         th {
             background: #f8f9fa;
-            color: var(--text-light);
-            font-weight: 600;
+            color: var(--text-dark);
+            font-weight: 700;
             font-size: 0.9rem;
-            padding: 15px 5px;
+            padding: 15px 2px;
             border-bottom: 2px solid var(--border-color);
+            white-space: nowrap; /* 줄바꿈 방지 */
         }
+        
+        th span { font-size: 1.2rem; margin-right: 4px; vertical-align: middle; } /* 헤더 이모지 크기 조절 */
 
         td {
-            padding: 15px 5px; /* 터치 영역 확보를 위해 패딩을 넓게 */
+            padding: 12px 2px;
             border-bottom: 1px solid var(--border-color);
             text-align: center;
             vertical-align: middle;
         }
 
-        /* 짝수 번째 줄 배경색 다르게 (가독성 향상) */
-        tbody tr:nth-child(even) {
-            background-color: #fafbfc;
-        }
+        /* 짝수 번째 줄 배경색 */
+        tbody tr:nth-child(even) { background-color: #fafbfc; }
         
         /* 이름 열 스타일 */
-        td.name-cell {
-            text-align: left;
-            padding-left: 15px;
-        }
-        .name-text {
-            font-weight: 700;
-            font-size: 1rem;
-            display: block;
-        }
-        .grade-text {
-            color: var(--text-light);
-            font-size: 0.85rem;
-            font-weight: normal;
-        }
+        td.name-cell { text-align: left; padding-left: 15px; }
+        .name-wrapper { display: flex; align-items: center; }
+        .name-emoji { font-size: 1.4rem; margin-right: 8px; }
+        .name-text { font-weight: 700; font-size: 1rem; display: block; }
+        .grade-text { color: var(--text-light); font-size: 0.85rem; font-weight: normal; }
 
         /* 체크박스 디자인 */
         input[type="checkbox"] {
-            width: 24px; /* 크기 키움 */
-            height: 24px;
+            width: 24px; height: 24px;
             cursor: pointer;
-            accent-color: var(--primary); /* 체크 색상 지정 */
+            accent-color: var(--primary);
             vertical-align: middle;
         }
 
         /* 저장 알림 토스트 */
         #status {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(50, 50, 50, 0.9);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 14px;
-            display: none;
-            z-index: 1000;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(50, 50, 50, 0.95); color: white;
+            padding: 12px 24px; border-radius: 30px;
+            font-weight: 600; font-size: 15px;
+            display: none; z-index: 1000;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
         }
+        #status span { font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
-    <div id="status">저장 중...</div>
+    <div id="status"><span>☁️</span> 저장 중...</div>
 
     <div class="main-container">
         <div class="header-card">
-            <h1 class="app-title">⛪ 주일학교 출석부</h1>
+            <h1 class="app-title"><span>⛪</span> 주일학교 출석부</h1>
             <div class="control-group">
                 <input type="date" id="datePicker" class="styled-input" onchange="updateTargetDate(this.value)">
                 <select class="styled-input" id="gradeFilter" onchange="filterStudents()">
                     <option value="all">📋 전체 학년 보기</option>
-                    <option value="1">1학년</option><option value="2">2학년</option>
-                    <option value="3">3학년</option><option value="4">4학년</option>
-                    <option value="5">5학년</option><option value="6">6학년</option>
+                    <option value="1">🌱 1학년</option>
+                    <option value="2">🌿 2학년</option>
+                    <option value="3">🌳 3학년</option>
+                    <option value="4">🍎 4학년</option>
+                    <option value="5">🏫 5학년</option>
+                    <option value="6">🎓 6학년</option>
                 </select>
             </div>
         </div>
@@ -183,12 +188,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 25%;">이름</th>
-                        <th>출석</th>
-                        <th>머릿돌</th>
-                        <th>헌금</th>
-                        <th>암송</th>
-                        <th>월암송</th>
+                        <th style="width: 28%;"><span>👶</span>이름</th>
+                        <th><span>✅</span>출석</th>
+                        <th><span>🪨</span>머릿돌</th>
+                        <th><span>💰</span>헌금</th>
+                        <th><span>📖</span>암송</th>
+                        <th><span>🗓️</span>월암송</th>
                     </tr>
                 </thead>
                 <tbody id="studentList"></tbody>
@@ -229,14 +234,19 @@
         function renderTable(list) {
             const tbody = document.getElementById('studentList');
             if (list.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="padding: 30px 0; color: var(--text-light);">학생이 없습니다.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="padding: 30px 0; color: var(--text-light);">학생이 없습니다. 😅</td></tr>';
                 return;
             }
             tbody.innerHTML = list.map(s => `
                 <tr data-name="${s.name}" data-grade="${s.grade}">
                     <td class="name-cell">
-                        <span class="name-text">${s.name}</span>
-                        <span class="grade-text">${s.grade}학년</span>
+                        <div class="name-wrapper">
+                            <span class="name-emoji">👤</span>
+                            <div>
+                                <span class="name-text">${s.name}</span>
+                                <span class="grade-text">${s.grade}학년</span>
+                            </div>
+                        </div>
                     </td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="attendance"></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="keystone"></td>
@@ -254,9 +264,9 @@
 
         async function autoSave(name, grade) {
             const statusEl = document.getElementById('status');
-            statusEl.innerText = "cloud_upload 저장 중...";
-            statusEl.style.display = 'block';
-            statusEl.style.backgroundColor = "rgba(50, 50, 50, 0.9)";
+            statusEl.innerHTML = "<span>☁️</span> 저장 중...";
+            statusEl.style.display = 'flex';
+            statusEl.style.backgroundColor = "rgba(50, 50, 50, 0.95)";
 
             const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
             const payload = [{
@@ -276,12 +286,12 @@
                     mode: 'no-cors', 
                     body: JSON.stringify(payload) 
                 });
-                statusEl.innerHTML = "check_circle <b>" + name + "</b> 저장 완료!";
-                statusEl.style.backgroundColor = "rgba(40, 167, 69, 0.9)"; // 성공 시 초록색
+                statusEl.innerHTML = `<span>✅</span> <b>${name}</b> 저장 완료!`;
+                statusEl.style.backgroundColor = "rgba(40, 167, 69, 0.95)"; // 성공 시 초록색
                 setTimeout(() => { statusEl.style.display = 'none'; }, 1500);
             } catch (e) {
-                statusEl.innerText = "error_outline 저장 실패! 인터넷을 확인하세요.";
-                statusEl.style.backgroundColor = "rgba(220, 53, 69, 0.9)"; // 실패 시 빨간색
+                statusEl.innerHTML = "<span>⚠️</span> 저장 실패! 인터넷을 확인하세요.";
+                statusEl.style.backgroundColor = "rgba(220, 53, 69, 0.95)"; // 실패 시 빨간색
                 console.error(e);
                 setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
             }
@@ -290,6 +300,7 @@
         window.onload = () => {
             setSmartDate();
             renderTable(students);
+            document.getElementById('status').style.display = 'none'; // 초기 로딩 시 숨김
         };
     </script>
 </body>
