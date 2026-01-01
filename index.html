@@ -327,7 +327,7 @@ async function loadData() {
                     body: JSON.stringify(payload) 
                 });
                 showStatus(`✅ ${name} 저장 완료`, "var(--success)", 1500);
-                setTimeout(() => loadData(), 600); 
+
             } catch (e) {
                 showStatus("⚠️ 저장 오류 발생", "var(--danger)", 3000);
             }
