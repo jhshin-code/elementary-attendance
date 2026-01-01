@@ -3,183 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>주일 출석부</title>
+    <title>초등부 출석부</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
-        :root {
-            --primary: #4a90e2;        /* 메인 파란색 */
-            --primary-dark: #357abd;   /* 진한 파란색 (포커스용) */
-            --bg-color: #f0f2f5;       /* 전체 배경색 */
-            --card-bg: #ffffff;        /* 카드 배경색 */
-            --text-dark: #333333;      /* 진한 글씨 */
-            --text-light: #888888;     /* 연한 글씨 */
-            --border-color: #e1e4e8;   /* 테두리 색 */
-            --border-radius: 16px;     /* 둥근 모서리 정도 */
-        }
-
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            margin: 0;
-            padding: 20px 15px;
-            background: var(--bg-color);
-            color: var(--text-dark);
-            line-height: 1.5;
-        }
-
-        /* 메인 컨테이너 */
-        .main-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* 상단 헤더 카드 */
-        .header-card {
-            background: var(--card-bg);
-            padding: 25px 20px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .app-title {
-            margin: 0 0 20px 0;
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--text-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* 입력 컨트롤 스타일 */
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .styled-input {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.05rem;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-dark);
-            font-weight: 500;
-            background: white;
-            box-sizing: border-box;
-            transition: all 0.2s;
-            text-align: center;
-            appearance: none; /* 기본 스타일 제거 (iOS 등) */
-        }
-
-        .styled-input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-        }
-        
-        #datePicker {
-            color: var(--primary);
-            font-weight: 700;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234a90e2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 20px;
-        }
-        
-        select.styled-input {
-             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-             background-repeat: no-repeat;
-             background-position: right 12px center;
-             background-size: 16px;
-        }
-
-        /* 테이블 스타일 */
-        .table-container {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-
-        th {
-            background: #f8f9fa;
-            color: var(--text-dark);
-            font-weight: 700;
-            font-size: 0.9rem;
-            padding: 15px 2px;
-            border-bottom: 2px solid var(--border-color);
-            white-space: nowrap; /* 줄바꿈 방지 */
-        }
-        
-        th span { font-size: 1.2rem; margin-right: 4px; vertical-align: middle; } /* 헤더 이모지 크기 조절 */
-
-        td {
-            padding: 12px 2px;
-            border-bottom: 1px solid var(--border-color);
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        /* 짝수 번째 줄 배경색 */
-        tbody tr:nth-child(even) { background-color: #fafbfc; }
-        
-        /* 이름 열 스타일 */
-        td.name-cell { text-align: left; padding-left: 15px; }
-        .name-wrapper { display: flex; align-items: center; }
-        .name-emoji { font-size: 1.4rem; margin-right: 8px; }
-        .name-text { font-weight: 700; font-size: 1rem; display: block; }
-        .grade-text { color: var(--text-light); font-size: 0.85rem; font-weight: normal; }
-
-        /* 체크박스 디자인 */
-        input[type="checkbox"] {
-            width: 24px; height: 24px;
-            cursor: pointer;
-            accent-color: var(--primary);
-            vertical-align: middle;
-        }
-
-        /* 저장 알림 토스트 */
-        #status {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(50, 50, 50, 0.95); color: white;
-            padding: 12px 24px; border-radius: 30px;
-            font-weight: 600; font-size: 15px;
-            display: none; z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            white-space: nowrap;
-            display: flex; align-items: center; gap: 8px;
-        }
-        #status span { font-size: 1.2rem; }
+        :root { --primary: #4a90e2; --bg: #f0f2f5; --card: #ffffff; --text: #333; }
+        body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 20px 15px; background: var(--bg); color: var(--text); }
+        .main-container { max-width: 600px; margin: 0 auto; }
+        .header-card { background: var(--card); padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
+        .app-title { margin: 0 0 20px 0; font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 12px; }
+        .styled-input { width: 100%; padding: 12px; font-size: 1rem; border: 2px solid #e1e4e8; border-radius: 12px; box-sizing: border-box; text-align: center; font-weight: 600; }
+        #datePicker { color: var(--primary); border-color: var(--primary); }
+        .table-container { background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e1e4e8; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { background: #f8f9fa; padding: 15px 2px; font-size: 0.85rem; border-bottom: 2px solid #e1e4e8; }
+        td { padding: 12px 2px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
+        .name-cell { text-align: left; padding-left: 15px; }
+        .name-text { font-weight: 700; font-size: 0.95rem; display: block; }
+        .grade-text { color: #888; font-size: 0.8rem; }
+        input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; accent-color: var(--primary); }
+        #status { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(50, 50, 50, 0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; display: none; z-index: 1000; align-items: center; gap: 8px; }
     </style>
 </head>
 <body>
 
-    <div id="status"><span>☁️</span> 저장 중...</div>
+    <div id="status">☁️ 로딩 중...</div>
 
     <div class="main-container">
         <div class="header-card">
-            <h1 class="app-title"><span>⛪</span> 주일학교 출석부</h1>
+            <h1 class="app-title">⛪ 주일학교 출석부</h1>
             <div class="control-group">
                 <input type="date" id="datePicker" class="styled-input" onchange="updateTargetDate(this.value)">
                 <select class="styled-input" id="gradeFilter" onchange="filterStudents()">
                     <option value="all">📋 전체 학년 보기</option>
-                    <option value="1">🌱 1학년</option>
-                    <option value="2">🌿 2학년</option>
-                    <option value="3">🌳 3학년</option>
-                    <option value="4">🍎 4학년</option>
-                    <option value="5">🏫 5학년</option>
-                    <option value="6">🎓 6학년</option>
+                    <option value="1">🌱 1학년</option><option value="2">🌿 2학년</option>
+                    <option value="3">🌳 3학년</option><option value="4">🍎 4학년</option>
+                    <option value="5">🏫 5학년</option><option value="6">🎓 6학년</option>
                 </select>
             </div>
         </div>
@@ -188,12 +47,8 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 28%;"><span>👶</span>이름</th>
-                        <th><span>✅</span>출석</th>
-                        <th><span>🪨</span>머릿돌</th>
-                        <th><span>💰</span>헌금</th>
-                        <th><span>📖</span>암송</th>
-                        <th><span>🗓️</span>월암송</th>
+                        <th style="width: 28%;">👶이름</th>
+                        <th>✅출석</th><th>돌</th><th>💰헌금</th><th>📖암송</th><th>🗓️월암송</th>
                     </tr>
                 </thead>
                 <tbody id="studentList"></tbody>
@@ -202,7 +57,6 @@
     </div>
 
     <script>
-        // 학생 데이터 명단
         const students = [
             { grade: "1", name: "김지호" }, { grade: "1", name: "신채은" },
             { grade: "2", name: "김세아" }, { grade: "2", name: "백윤우" }, { grade: "2", name: "신리호" }, { grade: "2", name: "이가은" }, { grade: "2", name: "이예안" }, { grade: "2", name: "최다솔" },
@@ -212,42 +66,76 @@
             { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "장선우" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "임재율" }
         ];
 
-        // ▼▼▼▼▼ 여기에 배포된 새 URL을 넣으세요 ▼▼▼▼▼
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx86Dx2HMxURGL5MB-9R0uDd7Uts3umeB8aXYofzLHiOxYf64hYoeVbIx-WlisIhjseEg/exec"; 
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyrTUsuLKS0d1JW1z0BeaBMKwL_tkUGeot_T0yF2pDXTKcGQGrD6UvhsbaZwwfL-gHBCg/exec"; 
         let targetDate = "";
 
-        // 요일에 상관없이 이번 주 주일(일요일) 계산
+        // 1. 시트에서 데이터 불러오기
+        async function loadAttendance() {
+            showStatus("🔍 기존 기록 확인 중...", "#333");
+            try {
+                const response = await fetch(`${GAS_URL}?date=${targetDate}`);
+                const savedData = await response.json();
+                
+                // 모든 체크박스 초기화
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+                // 데이터 반영
+                savedData.forEach(item => {
+                    const tr = document.querySelector(`tr[data-name="${item.name}"][data-grade="${item.grade}"]`);
+                    if (tr) {
+                        tr.querySelector('[data-type="attendance"]').checked = item.attendance;
+                        tr.querySelector('[data-type="keystone"]').checked = item.keystone;
+                        tr.querySelector('[data-type="offering"]').checked = item.offering;
+                        tr.querySelector('[data-type="recitation"]').checked = item.recitation;
+                        tr.querySelector('[data-type="monthlyRecitation"]').checked = item.monthlyRecitation;
+                    }
+                });
+                showStatus("✨ 로드 완료", "#28a745", 1000);
+            } catch (e) {
+                showStatus("❌ 로드 실패", "#dc3545", 2000);
+            }
+        }
+
+        // 2. 실시간 저장
+        async function autoSave(name, grade) {
+            showStatus("☁️ 저장 중...", "#333");
+            const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
+            const payload = [{
+                date: targetDate, name: name, grade: grade,
+                attendance: tr.querySelector('[data-type="attendance"]').checked,
+                keystone: tr.querySelector('[data-type="keystone"]').checked,
+                offering: tr.querySelector('[data-type="offering"]').checked,
+                recitation: tr.querySelector('[data-type="recitation"]').checked,
+                monthlyRecitation: tr.querySelector('[data-type="monthlyRecitation"]').checked
+            }];
+
+            try {
+                await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
+                showStatus(`✅ ${name} 저장 완료`, "#28a745", 1500);
+            } catch (e) {
+                showStatus("⚠️ 저장 실패", "#dc3545", 3000);
+            }
+        }
+
+        function showStatus(msg, color, delay) {
+            const el = document.getElementById('status');
+            el.innerHTML = msg; el.style.backgroundColor = color; el.style.display = 'flex';
+            if(delay) setTimeout(() => el.style.display = 'none', delay);
+        }
+
         function setSmartDate() {
             const today = new Date();
-            const day = today.getDay();
-            const diff = (day >= 3) ? (7 - day) : -day; // 수~토는 다가올 주일, 일~화는 지난 주일
-            const sunday = new Date();
-            sunday.setDate(today.getDate() + diff);
-            targetDate = sunday.toISOString().split('T')[0];
+            const diff = (today.getDay() >= 3) ? (7 - today.getDay()) : -today.getDay();
+            const sun = new Date(); sun.setDate(today.getDate() + diff);
+            targetDate = sun.toISOString().split('T')[0];
             document.getElementById('datePicker').value = targetDate;
         }
 
-        function updateTargetDate(val) { targetDate = val; }
-
         function renderTable(list) {
             const tbody = document.getElementById('studentList');
-            if (list.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="padding: 30px 0; color: var(--text-light);">학생이 없습니다. 😅</td></tr>';
-                return;
-            }
             tbody.innerHTML = list.map(s => `
                 <tr data-name="${s.name}" data-grade="${s.grade}">
-                    <td class="name-cell">
-                        <div class="name-wrapper">
-                            <span class="name-emoji">👤</span>
-                            <div>
-                                <span class="name-text">${s.name}</span>
-                                <span class="grade-text">${s.grade}학년</span>
-                            </div>
-                        </div>
-                    </td>
+                    <td class="name-cell"><span class="name-text">${s.name}</span><span class="grade-text">${s.grade}학년</span></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="attendance"></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="keystone"></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="offering"></td>
@@ -257,51 +145,14 @@
             `).join('');
         }
 
-        function filterStudents() {
-            const grade = document.getElementById('gradeFilter').value;
-            renderTable(grade === 'all' ? students : students.filter(s => s.grade === grade));
+        async function updateTargetDate(val) { targetDate = val; await loadAttendance(); }
+        async function filterStudents() {
+            const g = document.getElementById('gradeFilter').value;
+            renderTable(g === 'all' ? students : students.filter(s => s.grade === g));
+            await loadAttendance();
         }
 
-        async function autoSave(name, grade) {
-            const statusEl = document.getElementById('status');
-            statusEl.innerHTML = "<span>☁️</span> 저장 중...";
-            statusEl.style.display = 'flex';
-            statusEl.style.backgroundColor = "rgba(50, 50, 50, 0.95)";
-
-            const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
-            const payload = [{
-                date: targetDate,
-                name: name,
-                grade: grade,
-                attendance: tr.querySelector('[data-type="attendance"]').checked,
-                keystone: tr.querySelector('[data-type="keystone"]').checked,
-                offering: tr.querySelector('[data-type="offering"]').checked,
-                recitation: tr.querySelector('[data-type="recitation"]').checked,
-                monthlyRecitation: tr.querySelector('[data-type="monthlyRecitation"]').checked
-            }];
-
-            try {
-                await fetch(GAS_URL, { 
-                    method: "POST", 
-                    mode: 'no-cors', 
-                    body: JSON.stringify(payload) 
-                });
-                statusEl.innerHTML = `<span>✅</span> <b>${name}</b> 저장 완료!`;
-                statusEl.style.backgroundColor = "rgba(40, 167, 69, 0.95)"; // 성공 시 초록색
-                setTimeout(() => { statusEl.style.display = 'none'; }, 1500);
-            } catch (e) {
-                statusEl.innerHTML = "<span>⚠️</span> 저장 실패! 인터넷을 확인하세요.";
-                statusEl.style.backgroundColor = "rgba(220, 53, 69, 0.95)"; // 실패 시 빨간색
-                console.error(e);
-                setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
-            }
-        }
-
-        window.onload = () => {
-            setSmartDate();
-            renderTable(students);
-            document.getElementById('status').style.display = 'none'; // 초기 로딩 시 숨김
-        };
+        window.onload = async () => { setSmartDate(); renderTable(students); await loadAttendance(); };
     </script>
 </body>
 </html>
