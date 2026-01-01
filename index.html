@@ -3,253 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>초등부 출석부 ⛪</title>
+    <title>주일학교 출석부</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
-        :root {
-            --primary: #4a90e2;
-            --bg-color: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-dark: #333;
-            --text-light: #888;
-            --border-radius: 16px;
-        }
-
-        body {
-            font-family: 'Pretendard', sans-serif;
-            margin: 0; padding: 20px 15px;
-            background: var(--bg-color);
-            color: var(--text-dark);
-            line-height: 1.5;
-        }
-
+        :root { --primary: #4a90e2; --bg: #f0f2f5; --card: #ffffff; }
+        body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 20px 15px; background: var(--bg); }
         .main-container { max-width: 600px; margin: 0 auto; }
-
-        /* 상단 카드 */
-        .header-card {
-            background: var(--card-bg);
-            padding: 25px 20px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .app-title {
-            margin: 0 0 20px 0;
-            font-size: 1.6rem;
-            font-weight: 800;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-
-        .control-group { display: flex; flex-direction: column; gap: 12px; }
-
-        .styled-input {
-            width: 100%; padding: 12px; font-size: 1.05rem;
-            border: 2px solid #ddd; border-radius: 12px;
-            color: var(--text-dark); font-weight: 600;
-            background: white; box-sizing: border-box; text-align: center;
-            appearance: none;
-        }
-
-        #datePicker { color: var(--primary); border-color: var(--primary); }
-
-        /* 테이블 스타일 */
-        .table-container {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid #e1e4e8;
-        }
-
+        .header-card { background: var(--card); padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
+        .styled-input { width: 100%; padding: 12px; font-size: 1rem; border: 2px solid #ddd; border-radius: 12px; box-sizing: border-box; font-weight: 600; margin-bottom: 10px; }
+        .table-container { background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-
-        th {
-            background: #f8f9fa; color: var(--text-dark);
-            font-weight: 700; font-size: 0.85rem;
-            padding: 15px 2px; border-bottom: 2px solid #e1e4e8;
-        }
-
-        td { padding: 12px 2px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
-
-        tbody tr:nth-child(even) { background-color: #fafbfc; }
-        
-        .name-cell { text-align: left; padding-left: 15px; }
-        .name-text { font-weight: 700; font-size: 0.95rem; display: block; }
-        .grade-text { color: var(--text-light); font-size: 0.8rem; font-weight: 400; }
-
-        /* 체크박스 크기 */
-        input[type="checkbox"] {
-            width: 24px; height: 24px; cursor: pointer;
-            accent-color: var(--primary); vertical-align: middle;
-        }
-
-        /* 하단 알림창 */
-        #status {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(50, 50, 50, 0.95); color: white;
-            padding: 12px 24px; border-radius: 30px;
-            font-weight: 600; font-size: 14px;
-            display: none; z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            white-space: nowrap; align-items: center; gap: 8px;
-        }
+        th { background: #f8f9fa; padding: 12px 2px; font-size: 0.8rem; border-bottom: 2px solid #ddd; }
+        td { padding: 10px 2px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.9rem; }
+        input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary); }
+        #status { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
 
-    <div id="status"><span>☁️</span> 로딩 중...</div>
+<div id="status">로딩 중...</div>
 
-    <div class="main-container">
-        <div class="header-card">
-            <h1 class="app-title"><span>⛪</span> 주일학교 출석부</h1>
-            <div class="control-group">
-                <input type="date" id="datePicker" class="styled-input" onchange="updateTargetDate(this.value)">
-                <select class="styled-input" id="gradeFilter" onchange="filterStudents()">
-                    <option value="all">📋 전체 학년 보기</option>
-                    <option value="1">🌱 1학년</option>
-                    <option value="2">🌿 2학년</option>
-                    <option value="3">🌳 3학년</option>
-                    <option value="4">🍎 4학년</option>
-                    <option value="5">🏫 5학년</option>
-                    <option value="6">🎓 6학년</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 28%;">👶 이름</th>
-                        <th>✅출석</th>
-                        <th>🪨머릿</th>
-                        <th>💰헌금</th>
-                        <th>📖암송</th>
-                        <th>🗓️월암</th>
-                    </tr>
-                </thead>
-                <tbody id="studentList"></tbody>
-            </table>
-        </div>
+<div class="main-container">
+    <div class="header-card">
+        <h2 style="margin-top:0;">⛪ 출석부</h2>
+        <input type="date" id="datePicker" class="styled-input" onchange="updateDate(this.value)">
+        <select id="gradeFilter" class="styled-input" onchange="filterGrade()">
+            <option value="all">전체 학년</option>
+            <option value="1">1학년</option><option value="2">2학년</option>
+            <option value="3">3학년</option><option value="4">4학년</option>
+            <option value="5">5학년</option><option value="6">6학년</option>
+        </select>
     </div>
 
-    <script>
-        const students = [
-            { grade: "1", name: "김지호" }, { grade: "1", name: "신채은" },
-            { grade: "2", name: "김세아" }, { grade: "2", name: "백윤우" }, { grade: "2", name: "신리호" }, { grade: "2", name: "이가은" }, { grade: "2", name: "이예안" }, { grade: "2", name: "최다솔" },
-            { grade: "3", name: "김민찬" }, { grade: "3", name: "김유성" }, { grade: "3", name: "박지한" }, { grade: "3", name: "배민하" }, { grade: "3", name: "이유현" }, { grade: "3", name: "주인성" },
-            { grade: "4", name: "김시아" }, { grade: "4", name: "김유나" }, { grade: "4", name: "임정우" }, { grade: "4", name: "김동하" }, { grade: "4", name: "박태온" }, { grade: "4", name: "유시영" }, { grade: "4", name: "최지온" },
-            { grade: "5", name: "박이한" }, { grade: "5", name: "임승주" }, { grade: "5", name: "주현성" },
-            { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "장선우" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "임재율" }
-        ];
-
-        // ▼▼▼ 여기에 구글 앱스 스크립트의 새 배포 URL을 넣으세요 ▼▼▼
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzQKqV6vSH_wcjv38AJ7qmPvzFZf_QGacIR0k1ZT7oQbTHhpbRhOBApUQUPCh0sfe5iqA/exec"; 
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-        let targetDate = "";
-
-        // 시트 데이터 로드 (GET)
-        async function loadAttendance() {
-            showStatus("<span>🔍</span> 기록 확인 중...", "#333");
-            try {
-                const response = await fetch(`${GAS_URL}?date=${targetDate}&t=${new Date().getTime()}`);
-                const savedData = await response.json();
-                
-                // 체크박스 초기화
-                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-
-                // 시트 데이터와 매칭하여 체크
-                savedData.forEach(item => {
-                    const tr = document.querySelector(`tr[data-name="${item.name}"][data-grade="${item.grade}"]`);
-                    if (tr) {
-                        tr.querySelector('[data-type="attendance"]').checked = item.attendance;
-                        tr.querySelector('[data-type="keystone"]').checked = item.keystone;
-                        tr.querySelector('[data-type="offering"]').checked = item.offering;
-                        tr.querySelector('[data-type="recitation"]').checked = item.recitation;
-                        tr.querySelector('[data-type="monthlyRecitation"]').checked = item.monthlyRecitation;
-                    }
-                });
-                showStatus("<span>✨</span> 로드 완료!", "#28a745", 1000);
-            } catch (e) {
-                console.error(e);
-                showStatus("<span>❌</span> 데이터를 불러오지 못했습니다.", "#dc3545", 2000);
-            }
-        }
-
-        // 실시간 저장 (POST)
-        async function autoSave(name, grade) {
-            showStatus("<span>☁️</span> 시트에 저장 중...", "#333");
-            const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
-            const payload = [{
-                date: targetDate,
-                name: name,
-                grade: String(grade),
-                attendance: tr.querySelector('[data-type="attendance"]').checked,
-                keystone: tr.querySelector('[data-type="keystone"]').checked,
-                offering: tr.querySelector('[data-type="offering"]').checked,
-                recitation: tr.querySelector('[data-type="recitation"]').checked,
-                monthlyRecitation: tr.querySelector('[data-type="monthlyRecitation"]').checked
-            }];
-
-            try {
-                await fetch(GAS_URL, { 
-                    method: "POST", 
-                    mode: 'no-cors', 
-                    body: JSON.stringify(payload) 
-                });
-                showStatus(`<span>✅</span> ${name} 저장 완료`, "#28a745", 1500);
-            } catch (e) {
-                showStatus("<span>⚠️</span> 저장 실패!", "#dc3545", 3000);
-            }
-        }
-
-        function showStatus(msg, color, delay) {
-            const el = document.getElementById('status');
-            el.innerHTML = msg; el.style.backgroundColor = color; el.style.display = 'flex';
-            if(delay) setTimeout(() => el.style.display = 'none', delay);
-        }
-
-        function setSmartDate() {
-            const today = new Date();
-            const diff = (today.getDay() >= 3) ? (7 - today.getDay()) : -today.getDay();
-            const sunday = new Date();
-            sunday.setDate(today.getDate() + diff);
-            targetDate = sunday.toISOString().split('T')[0];
-            document.getElementById('datePicker').value = targetDate;
-        }
-
-        function renderTable(list) {
-            const tbody = document.getElementById('studentList');
-            tbody.innerHTML = list.map(s => `
-                <tr data-name="${s.name}" data-grade="${s.grade}">
-                    <td class="name-cell">
-                        <span class="name-text">${s.name}</span>
-                        <span class="grade-text">${s.grade}학년</span>
-                    </td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="attendance"></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="keystone"></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="offering"></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="recitation"></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="monthlyRecitation"></td>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:25%;">이름</th><th>출석</th><th>머릿</th><th>헌금</th><th>암송</th><th>월암</th>
                 </tr>
-            `).join('');
-        }
+            </thead>
+            <tbody id="studentList"></tbody>
+        </table>
+    </div>
+</div>
 
-        async function updateTargetDate(val) { targetDate = val; await loadAttendance(); }
-        async function filterStudents() {
-            const grade = document.getElementById('gradeFilter').value;
-            renderTable(grade === 'all' ? students : students.filter(s => s.grade === grade));
-            await loadAttendance(); // 필터링 후 체크박스 상태 다시 가져오기
-        }
+<script>
+const students = [
+    { grade: "1", name: "김지호" }, { grade: "1", name: "신채은" },
+    { grade: "2", name: "김세아" }, { grade: "2", name: "백윤우" }, { grade: "2", name: "신리호" }, { grade: "2", name: "이가은" }, { grade: "2", name: "이예안" }, { grade: "2", name: "최다솔" },
+    { grade: "3", name: "김민찬" }, { grade: "3", name: "김유성" }, { grade: "3", name: "박지한" }, { grade: "3", name: "배민하" }, { grade: "3", name: "이유현" }, { grade: "3", name: "주인성" },
+    { grade: "4", name: "김시아" }, { grade: "4", name: "김유나" }, { grade: "4", name: "임정우" }, { grade: "4", name: "김동하" }, { grade: "4", name: "박태온" }, { grade: "4", name: "유시영" }, { grade: "4", name: "최지온" },
+    { grade: "5", name: "박이한" }, { grade: "5", name: "임승주" }, { grade: "5", name: "주현성" },
+    { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "장선우" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "임재율" }
+];
 
-        window.onload = async () => {
-            setSmartDate();
-            renderTable(students);
-            await loadAttendance(); // 시작 시 기록 로드
-        };
-    </script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzmDygQhf2ezvCQ1tHE0ggw_B2GOtbuKVRoPbt_3u4fx5TZt4BRkx7tLdN9wEiC7yfQVA/exec"; 
+let targetDate = "";
+
+// ✅ 데이터 불러오기
+async function loadData() {
+    showStatus("🔍 데이터를 가져오는 중...");
+    try {
+        const res = await fetch(`${GAS_URL}?date=${targetDate}&t=${Date.now()}`);
+        const saved = await res.json();
+        
+        // 체크박스 초기화
+        document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+
+        saved.forEach(item => {
+            // 학년과 이름을 모두 비교하여 정확한 행 찾기
+            const tr = document.querySelector(`tr[data-name="${item.name}"][data-grade="${String(item.grade)}"]`);
+            if (tr) {
+                tr.querySelector('[data-type="attendance"]').checked = item.attendance;
+                tr.querySelector('[data-type="keystone"]').checked = item.keystone;
+                tr.querySelector('[data-type="offering"]').checked = item.offering;
+                tr.querySelector('[data-type="recitation"]').checked = item.recitation;
+                tr.querySelector('[data-type="monthlyRecitation"]').checked = item.monthlyRecitation;
+            }
+        });
+        showStatus("✅ 로드 완료", 1000);
+    } catch (e) { showStatus("❌ 로드 실패", 2000); }
+}
+
+// ✅ 실시간 저장
+async function autoSave(name, grade) {
+    showStatus("☁️ 저장 중...");
+    const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${String(grade)}"]`);
+    const payload = [{
+        date: targetDate, name: name, grade: String(grade),
+        attendance: tr.querySelector('[data-type="attendance"]').checked,
+        keystone: tr.querySelector('[data-type="keystone"]').checked,
+        offering: tr.querySelector('[data-type="offering"]').checked,
+        recitation: tr.querySelector('[data-type="recitation"]').checked,
+        monthlyRecitation: tr.querySelector('[data-type="monthlyRecitation"]').checked
+    }];
+
+    try {
+        await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
+        showStatus("✅ 저장됨", 1000);
+    } catch (e) { showStatus("⚠️ 오류 발생", 2000); }
+}
+
+function showStatus(m, d) {
+    const s = document.getElementById('status');
+    s.innerText = m; s.style.display = 'block';
+    if(d) setTimeout(() => s.style.display = 'none', d);
+}
+
+function render(list) {
+    document.getElementById('studentList').innerHTML = list.map(s => `
+        <tr data-name="${s.name}" data-grade="${s.grade}">
+            <td><b>${s.name}</b><br><small style="color:#999">${s.grade}학년</small></td>
+            <td><input type="checkbox" onchange="autoSave('${s.name}','${s.grade}')" data-type="attendance"></td>
+            <td><input type="checkbox" onchange="autoSave('${s.name}','${s.grade}')" data-type="keystone"></td>
+            <td><input type="checkbox" onchange="autoSave('${s.name}','${s.grade}')" data-type="offering"></td>
+            <td><input type="checkbox" onchange="autoSave('${s.name}','${s.grade}')" data-type="recitation"></td>
+            <td><input type="checkbox" onchange="autoSave('${s.name}','${s.grade}')" data-type="monthlyRecitation"></td>
+        </tr>
+    `).join('');
+}
+
+function updateDate(v) { targetDate = v; loadData(); }
+function filterGrade() {
+    const g = document.getElementById('gradeFilter').value;
+    render(g === 'all' ? students : students.filter(s => s.grade === g));
+    loadData();
+}
+
+window.onload = () => {
+    const today = new Date();
+    const sun = new Date(today.setDate(today.getDate() - today.getDay()));
+    targetDate = sun.toISOString().split('T')[0];
+    document.getElementById('datePicker').value = targetDate;
+    render(students);
+    loadData();
+};
+</script>
 </body>
 </html>
