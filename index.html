@@ -27,7 +27,6 @@
 
         .main-container { max-width: 600px; margin: 0 auto; }
 
-        /* 상단 설정 카드 */
         .header-card {
             background: var(--card-bg);
             padding: 25px 20px;
@@ -35,29 +34,20 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             margin-bottom: 20px;
             text-align: center;
-            position: relative; /* 버튼 배치를 위해 추가 */
+            position: relative;
         }
 
-        /* 💰 달란트 현황 버튼 */
         .talent-link {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 0.8rem;
-            color: #d68910;
-            font-weight: 700;
-            background: #fff9e6;
-            padding: 6px 12px;
-            border-radius: 12px;
-            border: 1px solid var(--gold);
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(241, 196, 15, 0.2);
+            top: 15px; right: 15px;
+            font-size: 0.8rem; color: #d68910; font-weight: 700;
+            background: #fff9e6; padding: 6px 12px;
+            border-radius: 12px; border: 1px solid var(--gold);
+            cursor: pointer; box-shadow: 0 2px 5px rgba(241, 196, 15, 0.2);
         }
 
         .app-title {
-            margin: 0 0 20px 0;
-            font-size: 1.6rem;
-            font-weight: 800;
+            margin: 0 0 20px 0; font-size: 1.6rem; font-weight: 800;
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
@@ -74,103 +64,58 @@
         .styled-input:focus { border-color: var(--primary); }
         #datePicker { color: var(--primary); border-color: var(--primary); }
 
-        /* 테이블 스타일 */
         .table-container {
-            background: var(--card-bg);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: var(--card-bg); border-radius: 20px;
+            overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             border: 1px solid #eee;
         }
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-
         th {
-            background: #f8f9fa; color: #666;
-            font-weight: 700; font-size: 0.8rem;
+            background: #f8f9fa; color: #666; font-weight: 700; font-size: 0.8rem;
             padding: 15px 2px; border-bottom: 2px solid #eee;
         }
-
         td { padding: 12px 2px; border-bottom: 1px solid #f1f3f5; text-align: center; vertical-align: middle; }
-
         tbody tr:nth-child(even) { background-color: #fafafa; }
-        
         .name-cell { text-align: left; padding-left: 15px; }
         .name-text { font-weight: 800; font-size: 0.95rem; display: block; }
-        .grade-text { color: var(--text-light); font-size: 0.8rem; font-weight: 400; }
+        .grade-text { color: var(--text-light); font-size: 0.8rem; }
 
-        /* 체크박스 디자인 */
-        input[type="checkbox"] {
-            width: 26px; height: 26px; cursor: pointer;
-            accent-color: var(--primary); vertical-align: middle;
-        }
+        input[type="checkbox"] { width: 26px; height: 26px; accent-color: var(--primary); }
 
-        /* 팝업(모달) 스타일 */
+        /* 팝업(모달) 및 점수 조절 버튼 */
         #talentModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+            z-index: 2000; justify-content: center; align-items: center;
         }
         .modal-content {
-            background: white;
-            width: 85%;
-            max-width: 400px;
-            border-radius: 24px;
-            padding: 25px;
-            max-height: 70vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: white; width: 90%; max-width: 400px;
+            border-radius: 24px; padding: 25px; max-height: 80vh;
+            overflow-y: auto; position: relative;
         }
-        .close-btn {
-            position: absolute;
-            top: 15px; right: 20px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #ccc;
-        }
-        .modal-title {
-            font-size: 1.3rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #d68910;
-        }
+        .modal-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; text-align: center; color: #d68910; }
         .talent-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 5px;
-            border-bottom: 1px solid #f5f5f5;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 5px; border-bottom: 1px solid #f5f5f5;
         }
-        .rank-badge {
-            width: 22px; height: 22px;
-            background: #f0f0f0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-right: 10px;
+        .score-controls { display: flex; align-items: center; gap: 10px; }
+        .score-btn {
+            width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ddd;
+            background: white; font-size: 1.2rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
-        .rank-1 { background: var(--gold); color: white; }
+        .score-btn.plus { color: var(--danger); background: #fff5f5; border-color: #ffcccc; }
+        .score-btn.minus { color: var(--primary); background: #f0f7ff; border-color: #cce0ff; }
+        .score-text { font-weight: 800; color: #d68910; min-width: 40px; text-align: center; }
 
-        /* 상태 알림창 (Toast) */
         #status {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.85); color: white;
-            padding: 12px 24px; border-radius: 50px;
-            font-weight: 600; font-size: 14px;
-            display: none; z-index: 1000;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            white-space: nowrap; align-items: center; gap: 8px;
+            padding: 12px 24px; border-radius: 50px; font-size: 14px;
+            display: none; z-index: 3000; align-items: center; gap: 8px;
         }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #ccc; }
     </style>
 </head>
 <body>
@@ -193,12 +138,8 @@
                 <input type="date" id="datePicker" class="styled-input" onchange="updateTargetDate(this.value)">
                 <select class="styled-input" id="gradeFilter" onchange="filterStudents()">
                     <option value="all">📋 전체 학년 보기</option>
-                    <option value="1">🌱 1학년</option>
-                    <option value="2">🌿 2학년</option>
-                    <option value="3">🌳 3학년</option>
-                    <option value="4">🍎 4학년</option>
-                    <option value="5">🏫 5학년</option>
-                    <option value="6">🎓 6학년</option>
+                    <option value="1">🌱 1학년</option><option value="2">🌿 2학년</option><option value="3">🌳 3학년</option>
+                    <option value="4">🍎 4학년</option><option value="5">🏫 5학년</option><option value="6">🎓 6학년</option>
                 </select>
             </div>
         </div>
@@ -208,11 +149,7 @@
                 <thead>
                     <tr>
                         <th style="width: 28%;">이름</th>
-                        <th>✅출석</th>
-                        <th>📙머릿돌</th>
-                        <th>💰헌금</th>
-                        <th>📖암송</th>
-                        <th>📚️월암송</th>
+                        <th>✅출석</th><th>📙머릿돌</th><th>💰헌금</th><th>📖암송</th><th>📚️월암송</th>
                     </tr>
                 </thead>
                 <tbody id="studentList"></tbody>
@@ -230,18 +167,17 @@
             { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하" }, { grade: "6", name: "장선우" }, { grade: "6", name: "임재율" }
         ];
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx40UcJ6mYj72q7M0typrTM4Xn-tWXyOk4qmgwtf2jRcnQ6v_YQgSY5y25wCaUP_aZWUQ/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyc8ed6FL79bCjAPmSmz7YK5r76IxVZrnYylVF-NN29jbD2p16haHaLHgi5-cgLi0w0/exec"; 
 
         let targetDate = "";
 
-        // 💰 달란트 현황 로드 (GET)
+        // 💰 달란트 현황 로드
         async function openTalentModal() {
             document.getElementById('talentModal').style.display = 'flex';
             const listEl = document.getElementById('talentList');
             listEl.innerHTML = "데이터를 불러오는 중... ⏳";
             
             try {
-                // 앱스 스크립트의 doGet에서 action=getTalents를 처리하도록 설계됨
                 const res = await fetch(`${GAS_URL}?action=getTalents&t=${Date.now()}`);
                 const data = await res.json();
                 
@@ -250,87 +186,72 @@
                         <div style="display:flex; align-items:center;">
                             <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">${index + 1}</div>
                             <div>
-                                <span style="font-weight:700; font-size:0.95rem;">${item.name}</span>
+                                <span style="font-weight:700;">${item.name}</span>
                                 <span style="font-size:0.75rem; color:#999;"> (${item.grade}학년)</span>
                             </div>
                         </div>
-                        <div style="font-weight:800; color:#d68910;">${item.score} <span style="font-size:0.7rem;">p</span></div>
+                        <div class="score-controls">
+                            <button class="score-btn minus" onclick="changeTalent('${item.name}', '${item.grade}', -1)">-</button>
+                            <span class="score-text">${item.score}p</span>
+                            <button class="score-btn plus" onclick="changeTalent('${item.name}', '${item.grade}', 1)">+</button>
+                        </div>
                     </div>
                 `).join('');
             } catch (e) {
-                listEl.innerHTML = "데이터를 가져오지 못했습니다. 😢<br><small>구글 스크립트 설정을 확인해주세요.</small>";
+                listEl.innerHTML = "데이터 로드 실패 😢";
             }
         }
 
-        function closeTalentModal() {
-            document.getElementById('talentModal').style.display = 'none';
-        }
+        function closeTalentModal() { document.getElementById('talentModal').style.display = 'none'; }
 
-        // 데이터 로드 (GET)
-async function loadData() {
-    showStatus("🔍 데이터를 동기화하는 중...", "#333");
-    try {
-        const res = await fetch(`${GAS_URL}?date=${targetDate}&t=${Date.now()}`);
-        const savedData = await res.json();
-        
-        // 일단 모든 체크박스 해제
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-
-        if (savedData.length === 0) {
-            showStatus("✨ 해당 날짜 기록 없음", "#666", 1000);
-            return;
-        }
-
-        savedData.forEach(item => {
-            const sName = String(item.name).trim();
-            const sGrade = String(item.grade).trim();
-            
-            // 데이터 속성(data-name, data-grade)을 이용해 정확한 행 찾기
-            const tr = document.querySelector(`tr[data-name="${sName}"][data-grade="${sGrade}"]`);
-            
-            if (tr) {
-                if(item.attendance) tr.querySelector('[data-type="attendance"]').checked = true;
-                if(item.keystone) tr.querySelector('[data-type="keystone"]').checked = true;
-                if(item.offering) tr.querySelector('[data-type="offering"]').checked = true;
-                if(item.recitation) tr.querySelector('[data-type="recitation"]').checked = true;
-                if(item.monthlyRecitation) tr.querySelector('[data-type="monthlyRecitation"]').checked = true;
-            } else {
-                console.warn(`일치하는 학생을 찾을 수 없음: ${sGrade}학년 ${sName}`);
+        // 💰 점수 수정 함수
+        async function changeTalent(name, grade, delta) {
+            showStatus("💰 점수 반영 중...", "#333");
+            const payload = { action: 'updateScore', name: name, grade: String(grade), delta: delta };
+            try {
+                await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
+                setTimeout(openTalentModal, 500); // 반영 후 리스트 새로고침
+                showStatus(`${name} 점수 반영 완료`, "var(--success)", 1000);
+            } catch (e) {
+                showStatus("점수 반영 실패", "var(--danger)", 2000);
             }
-        });
-        showStatus("✨ 동기화 완료!", "#28a745", 1000);
-    } catch (e) {
-        console.error("데이터 로드 중 오류:", e);
-        showStatus("❌ 동기화 실패 (URL 확인)", "#dc3545", 2000);
-    }
-}
+        }
 
-        // 데이터 저장 (POST)
+        async function loadData() {
+            showStatus("🔍 데이터를 동기화하는 중...", "#333");
+            try {
+                const res = await fetch(`${GAS_URL}?date=${targetDate}&t=${Date.now()}`);
+                const savedData = await res.json();
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                if (savedData.length === 0) { showStatus("✨ 기록 없음", "#666", 1000); return; }
+
+                savedData.forEach(item => {
+                    const tr = document.querySelector(`tr[data-name="${String(item.name).trim()}"][data-grade="${String(item.grade).trim()}"]`);
+                    if (tr) {
+                        if(item.attendance) tr.querySelector('[data-type="attendance"]').checked = true;
+                        if(item.keystone) tr.querySelector('[data-type="keystone"]').checked = true;
+                        if(item.offering) tr.querySelector('[data-type="offering"]').checked = true;
+                        if(item.recitation) tr.querySelector('[data-type="recitation"]').checked = true;
+                        if(item.monthlyRecitation) tr.querySelector('[data-type="monthlyRecitation"]').checked = true;
+                    }
+                });
+                showStatus("✨ 동기화 완료!", "#28a745", 1000);
+            } catch (e) { showStatus("❌ 동기화 실패", "#dc3545", 2000); }
+        }
+
         async function autoSave(name, grade) {
             showStatus("☁️ 실시간 저장 중...", "#333");
             const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${String(grade)}"]`);
             const payload = [{
-                date: targetDate,
-                name: name,
-                grade: String(grade),
+                date: targetDate, name: name, grade: String(grade),
                 attendance: tr.querySelector('[data-type="attendance"]').checked,
                 keystone: tr.querySelector('[data-type="keystone"]').checked,
                 offering: tr.querySelector('[data-type="offering"]').checked,
                 recitation: tr.querySelector('[data-type="recitation"]').checked,
                 monthlyRecitation: tr.querySelector('[data-type="monthlyRecitation"]').checked
             }];
-
-            try {
-                await fetch(GAS_URL, { 
-                    method: "POST", 
-                    mode: 'no-cors', 
-                    body: JSON.stringify(payload) 
-                });
-                showStatus(`✅ ${name} 저장 완료`, "var(--success)", 1500);
-
-            } catch (e) {
-                showStatus("⚠️ 저장 오류 발생", "var(--danger)", 3000);
-            }
+            await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
+            showStatus(`✅ ${name} 저장 완료`, "var(--success)", 1000);
         }
 
         function showStatus(msg, color, delay) {
@@ -352,10 +273,7 @@ async function loadData() {
             const tbody = document.getElementById('studentList');
             tbody.innerHTML = list.map(s => `
                 <tr data-name="${s.name}" data-grade="${s.grade}">
-                    <td class="name-cell">
-                        <span class="name-text">${s.name}</span>
-                        <span class="grade-text">${s.grade}학년</span>
-                    </td>
+                    <td class="name-cell"><span class="name-text">${s.name}</span><span class="grade-text">${s.grade}학년</span></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="attendance"></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="keystone"></td>
                     <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="offering"></td>
@@ -372,11 +290,7 @@ async function loadData() {
             await loadData();
         }
 
-        window.onload = async () => {
-            setSmartDate();
-            renderTable(students);
-            await loadData();
-        };
+        window.onload = async () => { setSmartDate(); renderTable(students); await loadData(); };
     </script>
 </body>
 </html>
