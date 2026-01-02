@@ -172,35 +172,52 @@
         let targetDate = "";
 
         // 💰 달란트 현황 로드
-        async function openTalentModal() {
-            document.getElementById('talentModal').style.display = 'flex';
-            const listEl = document.getElementById('talentList');
-            listEl.innerHTML = "데이터를 불러오는 중... ⏳";
-            
-            try {
-                const res = await fetch(`${GAS_URL}?action=getTalents&t=${Date.now()}`);
-                const data = await res.json();
-                
-                listEl.innerHTML = data.map((item, index) => `
-                    <div class="talent-item">
-                        <div style="display:flex; align-items:center;">
-                            <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">${index + 1}</div>
-                            <div>
-                                <span style="font-weight:700;">${item.name}</span>
-                                <span style="font-size:0.75rem; color:#999;"> (${item.grade}학년)</span>
-                            </div>
-                        </div>
-                        <div class="score-controls">
-                            <button class="score-btn minus" onclick="changeTalent('${item.name}', '${item.grade}', -1)">-</button>
-                            <span class="score-text">${item.score}p</span>
-                            <button class="score-btn plus" onclick="changeTalent('${item.name}', '${item.grade}', 1)">+</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) {
-                listEl.innerHTML = "데이터 로드 실패 😢";
-            }
+async function openTalentModal() {
+    document.getElementById('talentModal').style.display = 'flex';
+    const listEl = document.getElementById('talentList');
+    
+    // 1. 현재 선택된 학년 가져오기
+    const selectedGrade = document.getElementById('gradeFilter').value;
+    const gradeText = selectedGrade === 'all' ? "전체 학년" : `${selectedGrade}학년`;
+    
+    listEl.innerHTML = `${gradeText} 데이터를 불러오는 중... ⏳`;
+    
+    try {
+        const res = await fetch(`${GAS_URL}?action=getTalents&t=${Date.now()}`);
+        const data = await res.json();
+        
+        // 2. 선택된 학년에 따라 데이터 필터링
+        const filteredData = data.filter(item => {
+            if (selectedGrade === 'all') return true; // 전체보기면 모두 반환
+            return String(item.grade).trim() === String(selectedGrade).trim();
+        });
+
+        if (filteredData.length === 0) {
+            listEl.innerHTML = `<div style="text-align:center; padding:20px; color:#999;">${gradeText}에 등록된 학생이 없습니다.</div>`;
+            return;
         }
+        
+        // 3. 필터링된 데이터로 목록 생성
+        listEl.innerHTML = filteredData.map((item, index) => `
+            <div class="talent-item">
+                <div style="display:flex; align-items:center;">
+                    <div class="rank-badge ${index === 0 && selectedGrade === 'all' ? 'rank-1' : ''}">${index + 1}</div>
+                    <div>
+                        <span style="font-weight:700;">${item.name}</span>
+                        <span style="font-size:0.75rem; color:#999;"> (${item.grade}학년)</span>
+                    </div>
+                </div>
+                <div class="score-controls">
+                    <button class="score-btn minus" onclick="changeTalent('${item.name}', '${item.grade}', -1)">-</button>
+                    <span class="score-text">${item.score}p</span>
+                    <button class="score-btn plus" onclick="changeTalent('${item.name}', '${item.grade}', 1)">+</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) {
+        listEl.innerHTML = "데이터 로드 실패 😢";
+    }
+}
 
         function closeTalentModal() { document.getElementById('talentModal').style.display = 'none'; }
 
