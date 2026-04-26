@@ -38,6 +38,9 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* 모달 오픈 시 배경 스크롤 차단 */
+        body.modal-open { overflow: hidden; }
+
         .main-container { max-width: 560px; margin: 0 auto; }
 
         /* ── 헤더 카드 ── */
@@ -167,13 +170,13 @@
         .name-text { font-weight: 800; font-size: 0.9rem; display: block; line-height: 1.2; }
         .grade-text { color: var(--text-muted); font-size: 0.72rem; font-weight: 700; }
 
-        /* ── 체크박스 커스텀 ── */
+        /* ── 체크박스 커스텀 (터치 영역 확대) ── */
         .cb-wrap {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
             border: 1.5px solid var(--border);
             background: white;
@@ -190,13 +193,14 @@
             margin: 0;
         }
         .cb-wrap .check-icon {
-            font-size: 14px;
+            font-size: 16px;
             display: none;
             pointer-events: none;
         }
         .cb-wrap.checked {
             background: var(--primary);
             border-color: var(--primary);
+            color: white;
         }
         .cb-wrap.checked .check-icon { display: block; }
 
@@ -281,11 +285,11 @@
 
         .score-controls { display: flex; align-items: center; gap: 8px; }
         .score-btn {
-            width: 30px; height: 30px;
+            width: 34px; height: 34px;
             border-radius: 50%;
             border: 1.5px solid var(--border);
             background: white;
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: 700;
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
@@ -294,7 +298,7 @@
         .score-btn.minus { color: var(--primary); border-color: #bfdbfe; background: var(--primary-light); }
         .score-btn.plus { color: var(--danger); border-color: #fecaca; background: var(--danger-bg); }
         .score-btn:active { transform: scale(0.9); }
-        .score-value { font-weight: 800; color: var(--gold); min-width: 42px; text-align: center; font-size: 0.95rem; }
+        .score-value { font-weight: 800; color: var(--gold); min-width: 42px; text-align: center; font-size: 0.95rem; transition: color 0.2s; }
 
         /* ── 토스트 ── */
         #toast {
@@ -320,8 +324,8 @@
         }
 
         /* ── 로딩 상태 ── */
-        .skeleton td { animation: pulse 1.2s ease infinite; }
         @keyframes pulse { 0%,100%{ opacity:1 } 50%{ opacity:0.4 } }
+        .skeleton-box { background: #e2e8f0; border-radius: 4px; animation: pulse 1.2s infinite ease-in-out; }
     </style>
 </head>
 <body>
@@ -341,7 +345,6 @@
 
 <div class="main-container">
 
-    <!-- 헤더 -->
     <div class="header-card">
         <div class="header-top">
             <div class="app-title">⛪ 초등부 출석부</div>
@@ -361,7 +364,6 @@
         </div>
     </div>
 
-    <!-- 통계 바 -->
     <div class="stats-bar">
         <div class="stat-chip">
             <div class="stat-num" id="stat-total">-</div>
@@ -381,7 +383,6 @@
         </div>
     </div>
 
-    <!-- 테이블 -->
     <div class="table-container">
         <table>
             <thead>
@@ -404,7 +405,7 @@
 // ────────────────────────────────────────────
 //  설정
 // ────────────────────────────────────────────
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzdgDjFIkYA4JO60pjEZPg974MZUEjjd_jB7_EQ4awmiXdl81XsjRIL9JeHR6eyrK4g_g/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyrwr1qxafE5k0zlacQLHTYgF2zKfUYFjdV3fymWrDdliOz1kYLV7ZHIdITvJEKyuxwpQ/exec";
 
 const COLUMNS = ["attendance", "keystone", "offering", "recitation", "monthlyRecitation"];
 
@@ -418,12 +419,20 @@ const STUDENTS = [
 ];
 
 // ────────────────────────────────────────────
-//  상태
+//  상태 및 이탈 방지 이벤트
 // ────────────────────────────────────────────
 let targetDate = "";
 let currentList = [...STUDENTS];
 const saveTimers = {};   // debounce per student
 let toastTimer = null;
+
+// 저장 중 페이지 이탈 방지
+window.addEventListener("beforeunload", (e) => {
+    if (Object.keys(saveTimers).length > 0) {
+        e.preventDefault();
+        e.returnValue = "아직 저장 중인 데이터가 있습니다. 페이지를 나가시겠습니까?";
+    }
+});
 
 // ────────────────────────────────────────────
 //  유틸
@@ -439,7 +448,6 @@ function toast(msg, duration = 1800) {
 function getSunday() {
     const today = new Date();
     const day = today.getDay();
-    // 일요일=0, 월화수=1~3→이번주일요일, 목금토=4~6→다음주일요일
     const diff = day === 0 ? 0 : (day <= 3 ? -day : 7 - day);
     const sunday = new Date(today);
     sunday.setDate(today.getDate() + diff);
@@ -449,6 +457,19 @@ function getSunday() {
 // ────────────────────────────────────────────
 //  렌더링
 // ────────────────────────────────────────────
+function renderSkeleton() {
+    const tbody = document.getElementById("studentList");
+    tbody.innerHTML = Array(6).fill(0).map(() => `
+        <tr>
+            <td>
+                <div class="skeleton-box" style="height:16px; width:70%; margin-bottom:6px;"></div>
+                <div class="skeleton-box" style="height:12px; width:45%;"></div>
+            </td>
+            ${COLUMNS.map(() => `<td><div class="skeleton-box" style="width:36px; height:36px; border-radius:8px; margin:0 auto;"></div></td>`).join("")}
+        </tr>
+    `).join("");
+}
+
 function renderTable(list) {
     currentList = list;
     const tbody = document.getElementById("studentList");
@@ -489,8 +510,6 @@ function updateStats() {
 //  체크박스 클릭 핸들러
 // ────────────────────────────────────────────
 function onCheckboxClick(label, name, grade) {
-    // label 클릭 시 input의 checked가 이미 toggle된 후 이 함수 호출됨
-    // (실제로 input이 체크되기 전에 호출되므로 timeout 필요)
     setTimeout(() => {
         const input = label.querySelector("input");
         if (input.checked) {
@@ -507,24 +526,27 @@ function onCheckboxClick(label, name, grade) {
 //  데이터 로드
 // ────────────────────────────────────────────
 async function loadData() {
+    renderSkeleton(); // 스켈레톤 로딩 먼저 보여주기
     toast("🔄 불러오는 중...", 9999);
+    
     try {
         const res = await fetch(`${GAS_URL}?date=${targetDate}&t=${Date.now()}`);
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
 
-        // 모든 체크 초기화
-        document.querySelectorAll("#studentList input[type='checkbox']").forEach(cb => {
-            cb.checked = false;
-            cb.closest(".cb-wrap").classList.remove("checked");
-        });
+        // 현재 필터 상태에 맞춰 테이블 실제 렌더링
+        const grade = document.getElementById("gradeFilter").value;
+        const list = grade === "all" ? STUDENTS : STUDENTS.filter(s => s.grade === grade);
+        renderTable(list);
 
+        // 데이터 반영
         if (Array.isArray(data)) {
             data.forEach(item => {
                 const name = String(item.name).trim();
                 const grade = String(item.grade).trim();
                 const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
                 if (!tr) return;
+                
                 COLUMNS.forEach(col => {
                     if (item[col]) {
                         const cb = tr.querySelector(`[data-type="${col}"]`);
@@ -568,16 +590,21 @@ async function doSave(name, grade) {
     }];
 
     try {
+        // mode: "no-cors" 제거 및 text/plain 사용 (응답 확인 위함)
         const res = await fetch(GAS_URL, {
             method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify(payload)
         });
+        
+        if (!res.ok) throw new Error("서버 응답 오류");
         toast(`✅ ${name} 저장 완료`);
     } catch (e) {
         console.error("doSave error:", e);
-        toast(`⚠️ ${name} 저장 실패`);
+        toast(`⚠️ ${name} 저장 실패 - 네트워크 확인`);
+    } finally {
+        const key = `${name}__${grade}`;
+        delete saveTimers[key]; // 완료 후 대기열에서 제거
     }
 }
 
@@ -590,18 +617,17 @@ async function onDateChange(val) {
 }
 
 async function onGradeChange() {
-    const grade = document.getElementById("gradeFilter").value;
-    const list = grade === "all" ? STUDENTS : STUDENTS.filter(s => s.grade === grade);
-    renderTable(list);
-    await loadData();
+    await loadData(); // loadData 내부에서 필터링 후 렌더링되도록 처리
 }
 
 // ────────────────────────────────────────────
-//  달란트 모달
+//  달란트 모달 (낙관적 업데이트 반영)
 // ────────────────────────────────────────────
 async function openTalentModal() {
+    document.body.classList.add("modal-open"); // 배경 스크롤 차단
     const modal = document.getElementById("talentModal");
     modal.classList.add("open");
+    
     const listEl = document.getElementById("talentList");
     const grade = document.getElementById("gradeFilter").value;
     listEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted)">로딩 중... ⏳</div>`;
@@ -635,9 +661,9 @@ async function openTalentModal() {
                         </div>
                     </div>
                     <div class="score-controls">
-                        <button class="score-btn minus" onclick="changeTalent('${item.name}','${item.grade}',-1)">−</button>
+                        <button class="score-btn minus" onclick="changeTalent(event, '${item.name}', '${item.grade}', -1)">−</button>
                         <span class="score-value">${item.score}p</span>
-                        <button class="score-btn plus" onclick="changeTalent('${item.name}','${item.grade}',1)">+</button>
+                        <button class="score-btn plus" onclick="changeTalent(event, '${item.name}', '${item.grade}', 1)">+</button>
                     </div>
                 </div>`;
         }).join("");
@@ -648,6 +674,7 @@ async function openTalentModal() {
 }
 
 function closeTalentModal() {
+    document.body.classList.remove("modal-open");
     document.getElementById("talentModal").classList.remove("open");
 }
 
@@ -655,22 +682,34 @@ function handleOverlayClick(e) {
     if (e.target === document.getElementById("talentModal")) closeTalentModal();
 }
 
-async function changeTalent(name, grade, delta) {
-    toast("💰 점수 반영 중...", 9999);
+async function changeTalent(e, name, grade, delta) {
+    // 1. 낙관적 업데이트: 서버 응답 대기 전에 UI 먼저 변경
+    const scoreContainer = e.target.parentElement;
+    const scoreValueEl = scoreContainer.querySelector('.score-value');
+    const currentScore = parseInt(scoreValueEl.innerText);
+    const newScore = currentScore + delta;
+    
+    scoreValueEl.innerText = `${newScore}p`;
+    scoreValueEl.style.color = delta > 0 ? "var(--danger)" : "var(--primary)"; // 클릭 피드백
+    setTimeout(() => scoreValueEl.style.color = "var(--gold)", 300);
+
+    // 2. 백그라운드 서버 통신
     const payload = { action: "updateScore", name, grade: String(grade), delta };
     try {
-        await fetch(GAS_URL, {
+        const res = await fetch(GAS_URL, {
             method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify(payload)
         });
-        // 잠시 후 달란트 목록 새로고침
-        setTimeout(openTalentModal, 400);
-        toast(`${name} +${delta > 0 ? delta : ""}${delta < 0 ? delta : ""} 반영 완료`);
-    } catch (e) {
-        console.error("changeTalent error:", e);
-        toast("⚠️ 오류 발생");
+        
+        if (!res.ok) throw new Error("업데이트 실패");
+        toast(`💰 ${name} ${delta > 0 ? '+'+delta : delta}p 반영 완료`);
+    } catch (err) {
+        console.error("changeTalent error:", err);
+        toast("⚠️ 통신 오류로 점수가 롤백됩니다.");
+        // 실패 시 UI 원상 복구
+        scoreValueEl.innerText = `${currentScore}p`;
+        scoreValueEl.style.color = "var(--gold)";
     }
 }
 
@@ -680,8 +719,7 @@ async function changeTalent(name, grade, delta) {
 window.addEventListener("DOMContentLoaded", async () => {
     targetDate = getSunday();
     document.getElementById("datePicker").value = targetDate;
-    renderTable(STUDENTS);
-    await loadData();
+    await loadData(); // 초기 렌더링은 loadData 스켈레톤부터 수행
 });
 </script>
 </body>
