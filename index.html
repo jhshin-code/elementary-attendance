@@ -4,330 +4,685 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>초등부 출석부</title>
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4a90e2;
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-            --text-dark: #333;
-            --text-light: #999;
-            --success: #28a745;
-            --danger: #dc3545;
-            --gold: #f1c40f;
+            --primary: #3b82f6;
+            --primary-light: #eff6ff;
+            --primary-dark: #1d4ed8;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --success-bg: #f0fdf4;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --gold: #f59e0b;
+            --gold-bg: #fffbeb;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Pretendard', -apple-system, sans-serif;
-            margin: 0; padding: 20px 15px;
-            background: var(--bg-color);
-            color: var(--text-dark);
+            font-family: 'Nanum Gothic', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 16px;
+            min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
         }
 
-        .main-container { max-width: 600px; margin: 0 auto; }
+        .main-container { max-width: 560px; margin: 0 auto; }
 
+        /* ── 헤더 카드 ── */
         .header-card {
-            background: var(--card-bg);
-            padding: 25px 20px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            text-align: center;
-            position: relative;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 14px;
         }
 
-        .talent-link {
-            position: absolute;
-            top: 15px; right: 15px;
-            font-size: 0.8rem; color: #d68910; font-weight: 700;
-            background: #fff9e6; padding: 6px 12px;
-            border-radius: 12px; border: 1px solid var(--gold);
-            cursor: pointer; box-shadow: 0 2px 5px rgba(241, 196, 15, 0.2);
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
         }
 
         .app-title {
-            margin: 0 0 20px 0; font-size: 1.6rem; font-weight: 800;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
         }
 
-        .control-group { display: flex; flex-direction: column; gap: 12px; }
+        .talent-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #92400e;
+            background: var(--gold-bg);
+            border: 1.5px solid #fde68a;
+            padding: 7px 13px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .talent-btn:active { background: #fef3c7; }
+
+        .controls { display: flex; gap: 10px; }
 
         .styled-input {
-            width: 100%; padding: 14px; font-size: 1rem;
-            border: 2px solid #edf0f2; border-radius: 12px;
-            color: var(--text-dark); font-weight: 700;
-            background: white; box-sizing: border-box; text-align: center;
-            outline: none; transition: border-color 0.2s;
+            flex: 1;
+            padding: 11px 14px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            font-weight: 700;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+            text-align: center;
+        }
+        .styled-input:focus { border-color: var(--primary); background: white; }
+        #datePicker { color: var(--primary); border-color: #bfdbfe; background: var(--primary-light); }
+
+        /* ── 출석 통계 바 ── */
+        .stats-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .stat-chip {
+            flex: 1;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 10px 6px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .stat-num {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-weight: 700;
         }
 
-        .styled-input:focus { border-color: var(--primary); }
-        #datePicker { color: var(--primary); border-color: var(--primary); }
-
+        /* ── 테이블 ── */
         .table-container {
-            background: var(--card-bg); border-radius: 20px;
-            overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid #eee;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+
+        thead tr {
+            background: var(--bg);
+            border-bottom: 1.5px solid var(--border);
+        }
         th {
-            background: #f8f9fa; color: #666; font-weight: 700; font-size: 0.8rem;
-            padding: 15px 2px; border-bottom: 2px solid #eee;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            padding: 11px 2px;
+            text-align: center;
         }
-        td { padding: 12px 2px; border-bottom: 1px solid #f1f3f5; text-align: center; vertical-align: middle; }
-        tbody tr:nth-child(even) { background-color: #fafafa; }
-        .name-cell { text-align: left; padding-left: 15px; }
-        .name-text { font-weight: 800; font-size: 0.95rem; display: block; }
-        .grade-text { color: var(--text-light); font-size: 0.8rem; }
+        th:first-child { text-align: left; padding-left: 14px; }
 
-        input[type="checkbox"] { width: 26px; height: 26px; accent-color: var(--primary); cursor: pointer; }
+        td {
+            padding: 11px 2px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            vertical-align: middle;
+        }
+        td:first-child { text-align: left; padding-left: 14px; }
 
-        #talentModal {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.6);
-            z-index: 2000; justify-content: center; align-items: center;
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:nth-child(even) { background: #fafbfc; }
+        tbody tr { transition: background 0.1s; }
+        tbody tr:active { background: var(--primary-light); }
+
+        .name-text { font-weight: 800; font-size: 0.9rem; display: block; line-height: 1.2; }
+        .grade-text { color: var(--text-muted); font-size: 0.72rem; font-weight: 700; }
+
+        /* ── 체크박스 커스텀 ── */
+        .cb-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            background: white;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
         }
-        .modal-content {
-            background: white; width: 90%; max-width: 400px;
-            border-radius: 24px; padding: 25px; max-height: 80vh;
-            overflow-y: auto; position: relative;
+        .cb-wrap input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            margin: 0;
         }
-        .modal-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; text-align: center; color: #d68910; }
+        .cb-wrap .check-icon {
+            font-size: 14px;
+            display: none;
+            pointer-events: none;
+        }
+        .cb-wrap.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .cb-wrap.checked .check-icon { display: block; }
+
+        /* ── 달란트 모달 ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: flex-end;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal-sheet {
+            background: white;
+            width: 100%;
+            max-width: 560px;
+            border-radius: 24px 24px 0 0;
+            padding: 20px 20px 40px;
+            max-height: 82vh;
+            overflow-y: auto;
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-handle {
+            width: 40px; height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 0 auto 16px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .modal-title { font-size: 1.1rem; font-weight: 800; color: #92400e; }
+        .modal-close {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted);
+        }
+
         .talent-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 5px; border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--border);
         }
-        .score-controls { display: flex; align-items: center; gap: 10px; }
+        .talent-item:last-child { border-bottom: none; }
+
+        .rank-circle {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 800;
+            color: var(--text-muted);
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .rank-circle.gold { background: var(--gold); color: white; }
+        .rank-circle.silver { background: #94a3b8; color: white; }
+        .rank-circle.bronze { background: #cd7f32; color: white; }
+
+        .talent-name { font-weight: 800; font-size: 0.92rem; }
+        .talent-grade { font-size: 0.72rem; color: var(--text-muted); margin-left: 4px; }
+
+        .score-controls { display: flex; align-items: center; gap: 8px; }
         .score-btn {
-            width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ddd;
-            background: white; font-size: 1.2rem; font-weight: 700; cursor: pointer;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
             display: flex; align-items: center; justify-content: center;
+            transition: all 0.12s;
         }
-        .score-btn.plus { color: var(--danger); background: #fff5f5; border-color: #ffcccc; }
-        .score-btn.minus { color: var(--primary); background: #f0f7ff; border-color: #cce0ff; }
-        .score-text { font-weight: 800; color: #d68910; min-width: 40px; text-align: center; }
+        .score-btn.minus { color: var(--primary); border-color: #bfdbfe; background: var(--primary-light); }
+        .score-btn.plus { color: var(--danger); border-color: #fecaca; background: var(--danger-bg); }
+        .score-btn:active { transform: scale(0.9); }
+        .score-value { font-weight: 800; color: var(--gold); min-width: 42px; text-align: center; font-size: 0.95rem; }
 
-        .rank-badge {
-            width: 24px; height: 24px; background: #f0f0f0; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: 700; margin-right: 10px; color: #666;
-        }
-        /* 🏆 전체 학년 보기에서만 적용될 금색 스타일 */
-        .rank-badge.rank-1 { background-color: var(--gold) !important; color: white !important; }
-
-        #status {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.85); color: white;
-            padding: 12px 24px; border-radius: 50px; font-size: 14px;
-            display: none; z-index: 3000; align-items: center; gap: 8px;
+        /* ── 토스트 ── */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1e293b;
+            color: white;
+            padding: 11px 22px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            z-index: 3000;
             white-space: nowrap;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
+            opacity: 0;
+            pointer-events: none;
         }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #ccc; }
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ── 로딩 상태 ── */
+        .skeleton td { animation: pulse 1.2s ease infinite; }
+        @keyframes pulse { 0%,100%{ opacity:1 } 50%{ opacity:0.4 } }
     </style>
 </head>
 <body>
 
-    <div id="status">☁️ 데이터를 동기화 중...</div>
+<div id="toast"></div>
 
-    <div id="talentModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeTalentModal()">&times;</span>
-            <div class="modal-title">💰 누적 달란트 현황</div>
-            <div id="talentList">로딩 중... ⏳</div>
+<div id="talentModal" class="modal-overlay" onclick="handleOverlayClick(event)">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <div class="modal-title">💰 달란트 현황</div>
+            <button class="modal-close" onclick="closeTalentModal()">✕</button>
+        </div>
+        <div id="talentList"></div>
+    </div>
+</div>
+
+<div class="main-container">
+
+    <!-- 헤더 -->
+    <div class="header-card">
+        <div class="header-top">
+            <div class="app-title">⛪ 초등부 출석부</div>
+            <button class="talent-btn" onclick="openTalentModal()">💰 달란트</button>
+        </div>
+        <div class="controls">
+            <input type="date" id="datePicker" class="styled-input" onchange="onDateChange(this.value)">
+            <select class="styled-input" id="gradeFilter" onchange="onGradeChange()">
+                <option value="all">📋 전체</option>
+                <option value="1">🌱 1학년</option>
+                <option value="2">🌿 2학년</option>
+                <option value="3">🌳 3학년</option>
+                <option value="4">🍎 4학년</option>
+                <option value="5">🏫 5학년</option>
+                <option value="6">🎓 6학년</option>
+            </select>
         </div>
     </div>
 
-    <div class="main-container">
-        <div class="header-card">
-            <div class="talent-link" onclick="openTalentModal()">💰 달란트 현황</div>
-            <h1 class="app-title"><span>⛪</span> 초등부 출석부</h1>
-            <div class="control-group">
-                <input type="date" id="datePicker" class="styled-input" onchange="updateTargetDate(this.value)">
-                <select class="styled-input" id="gradeFilter" onchange="filterStudents()">
-                    <option value="all">📋 전체 학년 보기</option>
-                    <option value="1">🌱 1학년</option><option value="2">🌿 2학년</option><option value="3">🌳 3학년</option>
-                    <option value="4">🍎 4학년</option><option value="5">🏫 5학년</option><option value="6">🎓 6학년</option>
-                </select>
-            </div>
+    <!-- 통계 바 -->
+    <div class="stats-bar">
+        <div class="stat-chip">
+            <div class="stat-num" id="stat-total">-</div>
+            <div class="stat-label">전체</div>
         </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 28%;">이름</th>
-                        <th>✅출석</th><th>📙머릿돌</th><th>💰헌금</th><th>📖암송</th><th>📚️월암송</th>
-                    </tr>
-                </thead>
-                <tbody id="studentList"></tbody>
-            </table>
+        <div class="stat-chip">
+            <div class="stat-num" id="stat-attend" style="color:var(--success)">-</div>
+            <div class="stat-label">✅ 출석</div>
+        </div>
+        <div class="stat-chip">
+            <div class="stat-num" id="stat-offering" style="color:var(--gold)">-</div>
+            <div class="stat-label">💰 헌금</div>
+        </div>
+        <div class="stat-chip">
+            <div class="stat-num" id="stat-recite" style="color:var(--primary)">-</div>
+            <div class="stat-label">📖 암송</div>
         </div>
     </div>
 
-    <script>
-        const students = [
-            { grade: "1", name: "김지호" }, { grade: "1", name: "신채은" },
-            { grade: "2", name: "김세아" }, { grade: "2", name: "백윤우" }, { grade: "2", name: "신리호" }, { grade: "2", name: "이가은" }, { grade: "2", name: "이예안" }, { grade: "2", name: "최다솔" },
-            { grade: "3", name: "김민찬" }, { grade: "3", name: "김유성" }, { grade: "3", name: "박지한" }, { grade: "3", name: "배민하" }, { grade: "3", name: "이유현" }, { grade: "3", name: "주인성" },
-            { grade: "4", name: "김시아" }, { grade: "4", name: "김유나" }, { grade: "4", name: "임정우" }, { grade: "4", name: "김동하B" }, { grade: "4", name: "박태온" }, { grade: "4", name: "유시영" }, { grade: "4", name: "최지온" },
-            { grade: "5", name: "박이한" }, { grade: "5", name: "임승주" }, { grade: "5", name: "주현성" }, { grade: "5", name: "김동현" },
-            { grade: "6", name: "박지율" }, { grade: "6", name: "이세은" }, { grade: "6", name: "조윤서" }, { grade: "6", name: "김하이" }, { grade: "6", name: "김서윤" }, { grade: "6", name: "박도이" }, { grade: "6", name: "이하영" }, { grade: "6", name: "김동훈" }, { grade: "6", name: "최지율" }, { grade: "6", name: "김가온" }, { grade: "6", name: "김다현" }, { grade: "6", name: "김동하A" }, { grade: "6", name: "장선우" }, { grade: "6", name: "임재율" }
-        ];
-
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzdgDjFIkYA4JO60pjEZPg974MZUEjjd_jB7_EQ4awmiXdl81XsjRIL9JeHR6eyrK4g_g/exec"; 
-
-        let targetDate = "";
-
-        // 💰 달란트 현황 로드 (필터 및 전체1등 금색 배지 적용)
-        async function openTalentModal() {
-            document.getElementById('talentModal').style.display = 'flex';
-            const listEl = document.getElementById('talentList');
-            const selectedGrade = document.getElementById('gradeFilter').value;
-            const isAllGrades = (selectedGrade === 'all');
-            const gradeText = isAllGrades ? "전체 학년" : `${selectedGrade}학년`;
-            
-            listEl.innerHTML = `${gradeText} 로딩 중... ⏳`;
-            
-            try {
-                const res = await fetch(`${GAS_URL}?action=getTalents&t=${Date.now()}`);
-                const data = await res.json();
-                
-                const filteredData = data.filter(item => {
-                    if (isAllGrades) return true;
-                    return String(item.grade).trim() === String(selectedGrade).trim();
-                });
-
-                if (filteredData.length === 0) {
-                    listEl.innerHTML = `<div style="text-align:center; padding:20px; color:#999;">데이터가 없습니다.</div>`;
-                    return;
-                }
-                
-                listEl.innerHTML = filteredData.map((item, index) => {
-                    // ✅ 전체 학년 보기에서만 1등(index 0)에게 rank-1 클래스 부여
-                    const badgeClass = (isAllGrades && index === 0) ? 'rank-badge rank-1' : 'rank-badge';
-                    return `
-                        <div class="talent-item">
-                            <div style="display:flex; align-items:center;">
-                                <div class="${badgeClass}">${index + 1}</div>
-                                <div>
-                                    <span style="font-weight:700;">${item.name}</span>
-                                    <span style="font-size:0.75rem; color:#999;"> (${item.grade}학년)</span>
-                                </div>
-                            </div>
-                            <div class="score-controls">
-                                <button class="score-btn minus" onclick="changeTalent('${item.name}', '${item.grade}', -1)">-</button>
-                                <span class="score-text">${item.score}p</span>
-                                <button class="score-btn plus" onclick="changeTalent('${item.name}', '${item.grade}', 1)">+</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (e) {
-                listEl.innerHTML = "데이터 로드 실패 😢";
-            }
-        }
-
-        function closeTalentModal() { document.getElementById('talentModal').style.display = 'none'; }
-
-        async function changeTalent(name, grade, delta) {
-            showStatus("💰 점수 반영 중...", "#333");
-            const payload = { action: 'updateScore', name: name, grade: String(grade), delta: delta };
-            try {
-                await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
-                setTimeout(openTalentModal, 300); 
-                showStatus(`${name} 반영 완료`, "var(--success)", 1000);
-            } catch (e) { showStatus("오류 발생", "var(--danger)", 2000); }
-        }
-
-        // 🔍 출석 데이터 불러오기
-        async function loadData() {
-            showStatus("🔍 동기화 중...", "#333");
-            try {
-                const res = await fetch(`${GAS_URL}?date=${targetDate}&t=${Date.now()}`);
-                const savedData = await res.json();
-                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-                
-                if (savedData.length > 0) {
-                    savedData.forEach(item => {
-                        const tr = document.querySelector(`tr[data-name="${String(item.name).trim()}"][data-grade="${String(item.grade).trim()}"]`);
-                        if (tr) {
-                            if(item.attendance) tr.querySelector('[data-type="attendance"]').checked = true;
-                            if(item.keystone) tr.querySelector('[data-type="keystone"]').checked = true;
-                            if(item.offering) tr.querySelector('[data-type="offering"]').checked = true;
-                            if(item.recitation) tr.querySelector('[data-type="recitation"]').checked = true;
-                            if(item.monthlyRecitation) tr.querySelector('[data-type="monthlyRecitation"]').checked = true;
-                        }
-                    });
-                }
-                showStatus("✨ 동기화 완료!", "#28a745", 1000);
-            } catch (e) { showStatus("❌ 동기화 실패", "#dc3545", 2000); }
-        }
-
-        // ☁️ 저장 최적화 (Debounce: 0.8초간 대기 후 저장)
-        let saveTimeouts = {}; 
-        function autoSave(name, grade) {
-            const studentKey = `${name}_${grade}`;
-            showStatus("⏳ 저장 대기 중...", "#666");
-
-            if (saveTimeouts[studentKey]) clearTimeout(saveTimeouts[studentKey]);
-
-            saveTimeouts[studentKey] = setTimeout(async () => {
-                showStatus(`☁️ ${name} 저장 중...`, "#333");
-                const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${String(grade)}"]`);
-                const payload = [{
-                    date: targetDate, name: name, grade: String(grade),
-                    attendance: tr.querySelector('[data-type="attendance"]').checked,
-                    keystone: tr.querySelector('[data-type="keystone"]').checked,
-                    offering: tr.querySelector('[data-type="offering"]').checked,
-                    recitation: tr.querySelector('[data-type="recitation"]').checked,
-                    monthlyRecitation: tr.querySelector('[data-type="monthlyRecitation"]').checked
-                }];
-
-                try {
-                    await fetch(GAS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
-                    showStatus(`✅ ${name} 저장 완료`, "var(--success)", 1000);
-                } catch (e) { showStatus("⚠️ 저장 실패", "var(--danger)", 2000); }
-            }, 800);
-        }
-
-        function showStatus(msg, color, delay) {
-            const el = document.getElementById('status');
-            el.innerHTML = msg; el.style.backgroundColor = color; el.style.display = 'flex';
-            if(delay) setTimeout(() => el.style.display = 'none', delay);
-        }
-
-        function setSmartDate() {
-            const today = new Date();
-            const diff = (today.getDay() >= 3) ? (7 - today.getDay()) : -today.getDay();
-            const sunday = new Date();
-            sunday.setDate(today.getDate() + diff);
-            targetDate = sunday.toISOString().split('T')[0];
-            document.getElementById('datePicker').value = targetDate;
-        }
-
-        function renderTable(list) {
-            const tbody = document.getElementById('studentList');
-            tbody.innerHTML = list.map(s => `
-                <tr data-name="${s.name}" data-grade="${s.grade}">
-                    <td class="name-cell"><span class="name-text">${s.name}</span><span class="grade-text">${s.grade}학년</span></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="attendance"></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="keystone"></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="offering"></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="recitation"></td>
-                    <td><input type="checkbox" onchange="autoSave('${s.name}', '${s.grade}')" data-type="monthlyRecitation"></td>
+    <!-- 테이블 -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:29%">이름</th>
+                    <th>✅출석</th>
+                    <th>📙머릿돌</th>
+                    <th>💰헌금</th>
+                    <th>📖암송</th>
+                    <th>📚월암송</th>
                 </tr>
-            `).join('');
+            </thead>
+            <tbody id="studentList"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+// ────────────────────────────────────────────
+//  설정
+// ────────────────────────────────────────────
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzdgDjFIkYA4JO60pjEZPg974MZUEjjd_jB7_EQ4awmiXdl81XsjRIL9JeHR6eyrK4g_g/exec";
+
+const COLUMNS = ["attendance", "keystone", "offering", "recitation", "monthlyRecitation"];
+
+const STUDENTS = [
+    { grade:"1", name:"김지호" }, { grade:"1", name:"신채은" },
+    { grade:"2", name:"김세아" }, { grade:"2", name:"백윤우" }, { grade:"2", name:"신리호" }, { grade:"2", name:"이가은" }, { grade:"2", name:"이예안" }, { grade:"2", name:"최다솔" },
+    { grade:"3", name:"김민찬" }, { grade:"3", name:"김유성" }, { grade:"3", name:"박지한" }, { grade:"3", name:"배민하" }, { grade:"3", name:"이유현" }, { grade:"3", name:"주인성" },
+    { grade:"4", name:"김시아" }, { grade:"4", name:"김유나" }, { grade:"4", name:"임정우" }, { grade:"4", name:"김동하B" }, { grade:"4", name:"박태온" }, { grade:"4", name:"유시영" }, { grade:"4", name:"최지온" },
+    { grade:"5", name:"박이한" }, { grade:"5", name:"임승주" }, { grade:"5", name:"주현성" }, { grade:"5", name:"김동현" },
+    { grade:"6", name:"박지율" }, { grade:"6", name:"이세은" }, { grade:"6", name:"조윤서" }, { grade:"6", name:"김하이" }, { grade:"6", name:"김서윤" }, { grade:"6", name:"박도이" }, { grade:"6", name:"이하영" }, { grade:"6", name:"김동훈" }, { grade:"6", name:"최지율" }, { grade:"6", name:"김가온" }, { grade:"6", name:"김다현" }, { grade:"6", name:"김동하A" }, { grade:"6", name:"장선우" }, { grade:"6", name:"임재율" }
+];
+
+// ────────────────────────────────────────────
+//  상태
+// ────────────────────────────────────────────
+let targetDate = "";
+let currentList = [...STUDENTS];
+const saveTimers = {};   // debounce per student
+let toastTimer = null;
+
+// ────────────────────────────────────────────
+//  유틸
+// ────────────────────────────────────────────
+function toast(msg, duration = 1800) {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), duration);
+}
+
+function getSunday() {
+    const today = new Date();
+    const day = today.getDay();
+    // 일요일=0, 월화수=1~3→이번주일요일, 목금토=4~6→다음주일요일
+    const diff = day === 0 ? 0 : (day <= 3 ? -day : 7 - day);
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() + diff);
+    return sunday.toISOString().split("T")[0];
+}
+
+// ────────────────────────────────────────────
+//  렌더링
+// ────────────────────────────────────────────
+function renderTable(list) {
+    currentList = list;
+    const tbody = document.getElementById("studentList");
+    tbody.innerHTML = list.map(s => `
+        <tr data-name="${s.name}" data-grade="${s.grade}">
+            <td>
+                <span class="name-text">${s.name}</span>
+                <span class="grade-text">${s.grade}학년</span>
+            </td>
+            ${COLUMNS.map(col => `
+            <td>
+                <label class="cb-wrap" onclick="onCheckboxClick(this, '${s.name}', '${s.grade}')">
+                    <input type="checkbox" data-type="${col}">
+                    <span class="check-icon">✓</span>
+                </label>
+            </td>`).join("")}
+        </tr>
+    `).join("");
+    updateStats();
+}
+
+function updateStats() {
+    const rows = document.querySelectorAll("#studentList tr");
+    const total = rows.length;
+    let attend = 0, offering = 0, recite = 0;
+    rows.forEach(tr => {
+        if (tr.querySelector('[data-type="attendance"]')?.checked) attend++;
+        if (tr.querySelector('[data-type="offering"]')?.checked) offering++;
+        if (tr.querySelector('[data-type="recitation"]')?.checked) recite++;
+    });
+    document.getElementById("stat-total").textContent = total;
+    document.getElementById("stat-attend").textContent = attend;
+    document.getElementById("stat-offering").textContent = offering;
+    document.getElementById("stat-recite").textContent = recite;
+}
+
+// ────────────────────────────────────────────
+//  체크박스 클릭 핸들러
+// ────────────────────────────────────────────
+function onCheckboxClick(label, name, grade) {
+    // label 클릭 시 input의 checked가 이미 toggle된 후 이 함수 호출됨
+    // (실제로 input이 체크되기 전에 호출되므로 timeout 필요)
+    setTimeout(() => {
+        const input = label.querySelector("input");
+        if (input.checked) {
+            label.classList.add("checked");
+        } else {
+            label.classList.remove("checked");
+        }
+        updateStats();
+        scheduleAutoSave(name, grade);
+    }, 0);
+}
+
+// ────────────────────────────────────────────
+//  데이터 로드
+// ────────────────────────────────────────────
+async function loadData() {
+    toast("🔄 불러오는 중...", 9999);
+    try {
+        const res = await fetch(`${GAS_URL}?date=${targetDate}&t=${Date.now()}`);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+
+        // 모든 체크 초기화
+        document.querySelectorAll("#studentList input[type='checkbox']").forEach(cb => {
+            cb.checked = false;
+            cb.closest(".cb-wrap").classList.remove("checked");
+        });
+
+        if (Array.isArray(data)) {
+            data.forEach(item => {
+                const name = String(item.name).trim();
+                const grade = String(item.grade).trim();
+                const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
+                if (!tr) return;
+                COLUMNS.forEach(col => {
+                    if (item[col]) {
+                        const cb = tr.querySelector(`[data-type="${col}"]`);
+                        if (cb) {
+                            cb.checked = true;
+                            cb.closest(".cb-wrap").classList.add("checked");
+                        }
+                    }
+                });
+            });
+        }
+        updateStats();
+        toast("✅ 동기화 완료!");
+    } catch (e) {
+        console.error("loadData error:", e);
+        toast("❌ 불러오기 실패 – 재시도 해주세요");
+    }
+}
+
+// ────────────────────────────────────────────
+//  자동 저장 (디바운스 0.8초)
+// ────────────────────────────────────────────
+function scheduleAutoSave(name, grade) {
+    const key = `${name}__${grade}`;
+    toast("⏳ 저장 대기 중...", 9999);
+    clearTimeout(saveTimers[key]);
+    saveTimers[key] = setTimeout(() => doSave(name, grade), 800);
+}
+
+async function doSave(name, grade) {
+    const tr = document.querySelector(`tr[data-name="${name}"][data-grade="${grade}"]`);
+    if (!tr) return;
+
+    const payload = [{
+        date: targetDate,
+        name,
+        grade: String(grade),
+        ...Object.fromEntries(
+            COLUMNS.map(col => [col, tr.querySelector(`[data-type="${col}"]`)?.checked ?? false])
+        )
+    }];
+
+    try {
+        const res = await fetch(GAS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        toast(`✅ ${name} 저장 완료`);
+    } catch (e) {
+        console.error("doSave error:", e);
+        toast(`⚠️ ${name} 저장 실패`);
+    }
+}
+
+// ────────────────────────────────────────────
+//  이벤트 핸들러
+// ────────────────────────────────────────────
+async function onDateChange(val) {
+    targetDate = val;
+    await loadData();
+}
+
+async function onGradeChange() {
+    const grade = document.getElementById("gradeFilter").value;
+    const list = grade === "all" ? STUDENTS : STUDENTS.filter(s => s.grade === grade);
+    renderTable(list);
+    await loadData();
+}
+
+// ────────────────────────────────────────────
+//  달란트 모달
+// ────────────────────────────────────────────
+async function openTalentModal() {
+    const modal = document.getElementById("talentModal");
+    modal.classList.add("open");
+    const listEl = document.getElementById("talentList");
+    const grade = document.getElementById("gradeFilter").value;
+    listEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted)">로딩 중... ⏳</div>`;
+
+    try {
+        const res = await fetch(`${GAS_URL}?action=getTalents&t=${Date.now()}`);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+
+        const filtered = grade === "all" ? data : data.filter(d => String(d.grade).trim() === grade);
+
+        if (!filtered.length) {
+            listEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted)">데이터가 없습니다.</div>`;
+            return;
         }
 
-        async function updateTargetDate(val) { targetDate = val; await loadData(); }
-        async function filterStudents() {
-            const grade = document.getElementById('gradeFilter').value;
-            renderTable(grade === 'all' ? students : students.filter(s => s.grade === grade));
-            await loadData();
-        }
+        listEl.innerHTML = filtered.map((item, i) => {
+            let badgeClass = "rank-circle";
+            if (grade === "all") {
+                if (i === 0) badgeClass += " gold";
+                else if (i === 1) badgeClass += " silver";
+                else if (i === 2) badgeClass += " bronze";
+            }
+            return `
+                <div class="talent-item">
+                    <div style="display:flex;align-items:center;">
+                        <div class="${badgeClass}">${i + 1}</div>
+                        <div>
+                            <span class="talent-name">${item.name}</span>
+                            <span class="talent-grade">${item.grade}학년</span>
+                        </div>
+                    </div>
+                    <div class="score-controls">
+                        <button class="score-btn minus" onclick="changeTalent('${item.name}','${item.grade}',-1)">−</button>
+                        <span class="score-value">${item.score}p</span>
+                        <button class="score-btn plus" onclick="changeTalent('${item.name}','${item.grade}',1)">+</button>
+                    </div>
+                </div>`;
+        }).join("");
+    } catch (e) {
+        console.error("openTalentModal error:", e);
+        listEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--danger)">데이터 로드 실패 😢</div>`;
+    }
+}
 
-        window.onload = async () => { setSmartDate(); renderTable(students); await loadData(); };
-    </script>
+function closeTalentModal() {
+    document.getElementById("talentModal").classList.remove("open");
+}
+
+function handleOverlayClick(e) {
+    if (e.target === document.getElementById("talentModal")) closeTalentModal();
+}
+
+async function changeTalent(name, grade, delta) {
+    toast("💰 점수 반영 중...", 9999);
+    const payload = { action: "updateScore", name, grade: String(grade), delta };
+    try {
+        await fetch(GAS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        // 잠시 후 달란트 목록 새로고침
+        setTimeout(openTalentModal, 400);
+        toast(`${name} +${delta > 0 ? delta : ""}${delta < 0 ? delta : ""} 반영 완료`);
+    } catch (e) {
+        console.error("changeTalent error:", e);
+        toast("⚠️ 오류 발생");
+    }
+}
+
+// ────────────────────────────────────────────
+//  초기화
+// ────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", async () => {
+    targetDate = getSunday();
+    document.getElementById("datePicker").value = targetDate;
+    renderTable(STUDENTS);
+    await loadData();
+});
+</script>
 </body>
 </html>
